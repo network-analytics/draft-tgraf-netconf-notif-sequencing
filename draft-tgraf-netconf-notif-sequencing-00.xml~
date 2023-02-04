@@ -1,0 +1,514 @@
+<?xml version="1.0" encoding="US-ASCII"?>
+<!DOCTYPE rfc SYSTEM "rfc2629.dtd">
+<?rfc toc="yes"?>
+<?rfc tocompact="yes"?>
+<?rfc tocdepth="2"?>
+<?rfc tocindent="yes"?>
+<?rfc symrefs="yes"?>
+<?rfc sortrefs="yes"?>
+<?rfc comments="yes"?>
+<?rfc inline="yes"?>
+<?rfc compact="yes"?>
+<?rfc subcompact="no"?>
+<rfc category="std" docName="draft-tgraf-netconf-notif-sequencing-00"
+     ipr="trust200902">
+  <front>
+    <title abbrev="YANG Notifications Versioning">Support of Versioning in
+    YANG Notifications Subscription</title>
+
+    <author fullname="Thomas Graf" initials="T" surname="Graf">
+      <organization>Swisscom</organization>
+
+      <address>
+        <postal>
+          <street>Binzring 17</street>
+
+          <city>Zurich</city>
+
+          <code>8045</code>
+
+          <country>Switzerland</country>
+        </postal>
+
+        <email>thomas.graf@swisscom.com</email>
+      </address>
+    </author>
+
+    <author fullname="Jean Quilbeuf" initials="J" surname="Quilbeuf">
+      <organization>Huawei</organization>
+
+      <address>
+        <email>jean.quilbeuf@huawei.com</email>
+      </address>
+    </author>
+
+    <author fullname="Alex Huang Feng" initials="A." surname="Huang Feng">
+      <organization>INSA-Lyon</organization>
+
+      <address>
+        <postal>
+          <street/>
+
+          <city>Lyon</city>
+
+          <region/>
+
+          <code/>
+
+          <country>France</country>
+        </postal>
+
+        <phone/>
+
+        <facsimile/>
+
+        <email>alex.huang-feng@insa-lyon.fr</email>
+
+        <uri/>
+      </address>
+    </author>
+
+    <date day="4" month="February" year="2023"/>
+
+    <abstract>
+      <t>This document extends the NETCONF Event Notification header to
+      support hostname and sequence numbers to identify from which network
+      node at which time which message was published. This allows to recognize
+      loss, delay and reordering between the publisher and the downstream
+      system storing the message.</t>
+    </abstract>
+  </front>
+
+  <middle>
+    <section anchor="Introduction" title="Introduction">
+      <t>Section 2 of <xref target="RFC5277"/> describes the NETCONF event
+      notification header in XML and <xref
+      target="I-D.ahuang-netconf-notif-yang"/> in YANG. Section 2.2.1 of <xref
+      target="RFC5277"/> describes the eventTime. Indicating at which time the
+      NETCONF event notification message was published. Section 3.7 of <xref
+      target="RFC8641"/> describes the Subscription Id in the "push-update"
+      and "push-change-update" messages to which the xpath or sub-tree was
+      subscribed to.</t>
+
+      <t>When the NETCONF event notification message is being forwarded form
+      the receiver to another system, such as a messaging system or a time
+      series database where the message is being stored, the transport context
+      is being lost since it is not part of the NETCONF event notification
+      message metadata. Therefore, the downstream system is unable to
+      associate the message to the publishing process nor able to detect
+      message loss or reordering.</t>
+
+      <t>Today network operator's workaround this impediment by preserving the
+      transport source IP address and sequence numbers of the publishing
+      process. However, this implies that this information needs to be encoded
+      somehow in the NETCONF event notification message which impacts the
+      semantic readability of the message in the downstream system.</t>
+
+      <t>By extending the NETCONF Event Notification header with sysName as
+      defined in <xref target="RFC1213"/> and a sequence number as being
+      described in <xref target="RFC9187"/>, the downstream system is now able
+      to identify from which network node, subscription, time and through the
+      sequence number at which order the message has been published from.</t>
+    </section>
+
+    <section anchor="Streaming-Update"
+             title="Extend the NETCONF Event Notification Header">
+      <t>Besides the eventTime described in Section 2.2.1 of <xref
+      target="RFC5277"/> the following metadata objects are part of a
+      "push-update" and "push-change-update" notification message.</t>
+
+      <dl>
+        <dt>sysName:</dt>
+
+        <dd>Describes the hostname as specified in <xref target="RFC1213"/>
+        from where the message was published from.</dd>
+      </dl>
+
+      <dl>
+        <dt>sequenceNumber:</dt>
+
+        <dd>Generates a unique sequence number as described in <xref
+        target="RFC9187"/> for each published message.</dd>
+      </dl>
+
+      <t><xref target="notification_message_example_xml_fig"/> provides an
+      example of a "push-change-update" message with the sysName and
+      sequenceNumber. This "push-change-update" message is encoded XML <xref
+      target="W3C.REC-xml-20081126"/> over the Network Configuration Protocol
+      (NETCONF) as per <xref target="RFC8640"/>.</t>
+
+      <figure anchor="notification_message_example_xml_fig"
+              title="XML Push Example for a subscription-modified notification message">
+        <artwork><![CDATA[
+<notification xmlns="urn:ietf:params:xml:ns:netconf:notification:1.0">
+ <eventTime>2023-02-04T16:30:11.22Z</eventTime>
+ <sysName>example-router</sysName>
+ <sequenceNumber>187653</sequenceNumber>
+ <push-update xmlns="urn:ietf:params:xml:ns:yang:ietf-yang-push">
+   <id>1011</id>
+   <datastore-contents>
+      <interfaces xmlns="urn:ietf:params:xml:ns:yang:ietf-interfaces">
+       <interface>
+         <name>eth0</name>
+         <oper-status>up</oper-status>
+       </interface>
+     </interfaces>
+   </datastore-contents>
+ </push-update>
+</notification>        
+        ]]></artwork>
+      </figure>
+    </section>
+
+    <section anchor="xml-event-notif"
+             title="XML Schema for Event Notifications">
+      <section anchor="xml-schema" title="XML Schema">
+        <t>The following <xref target="XMLSchema"/> updates NETCONF Event
+        Notifications with sysName and sequenceNumber leaf as described in
+        Section 2 of this document.</t>
+
+        <t><figure>
+            <artwork align="left"><![CDATA[
+<?xml version="1.0" encoding="UTF-8"?>
+  <xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema"
+     xmlns="urn:ietf:params:xml:ns:netconf:notification:1.0"
+     xmlns:netconf="urn:ietf:params:xml:ns:netconf:base:1.0"
+     targetNamespace=
+        "urn:ietf:params:xml:ns:netconf:notification:1.0"
+     elementFormDefault="qualified"
+     attributeFormDefault="unqualified"
+       xml:lang="en">
+    <!-- import standard XML definitions -->
+
+     <xs:import namespace="http://www.w3.org/XML/1998/namespace"
+                schemaLocation="http://www.w3.org/2001/xml.xsd">
+       <xs:annotation>
+         <xs:documentation>
+           This import accesses the xml: attribute groups for the
+           xml:lang as declared on the error-message element.
+         </xs:documentation>
+       </xs:annotation>
+     </xs:import>
+
+     <!-- import base netconf definitions -->
+     <xs:import namespace="urn:ietf:params:xml:ns:netconf:base:1.0"
+       schemaLocation="netconf.xsd"/>
+
+<!-- ************** Symmetrical Operations  ********************-->
+
+     <!-- <create-subscription> operation -->
+
+    <xs:complexType name="createSubscriptionType">
+        <xs:complexContent>
+            <xs:extension base="netconf:rpcOperationType">
+                <xs:sequence>
+                    <xs:element name="stream"
+                        type="streamNameType" minOccurs="0">
+                        <xs:annotation>
+                            <xs:documentation>
+                               An optional parameter that indicates
+                               which stream of events is of interest.
+                               If not present, then events in the
+                               default NETCONF stream will be sent.
+                            </xs:documentation>
+                        </xs:annotation>
+                    </xs:element>
+                        <xs:element name="filter"
+                            type="netconf:filterInlineType"
+                            minOccurs="0">
+                            <xs:annotation>
+                                <xs:documentation>
+                                    An optional parameter that indicates
+                                    which subset of all possible events
+                                    is of interest.  The format of this
+                                    parameter is the same as that of the
+                                    filter parameter in the NETCONF
+                                    protocol operations.  If not
+                                    present, all events not precluded
+                                    by other parameters will be sent.
+                                </xs:documentation>
+                            </xs:annotation>
+                        </xs:element>
+                    <xs:element name="startTime" type="xs:dateTime"
+                        minOccurs="0" >
+                        <xs:annotation>
+                            <xs:documentation>
+                                A parameter used to trigger the replay
+                                feature indicating that the replay
+                                should start at the time specified.  If
+                                start time is not present, this is not a
+                                replay subscription.
+                            </xs:documentation>
+                        </xs:annotation>
+                    </xs:element>
+                    <xs:element name="stopTime" type="xs:dateTime"
+                        minOccurs="0" >
+                        <xs:annotation>
+                            <xs:documentation>
+                                An optional parameter used with the
+                                optional replay feature to indicate the
+                                newest notifications of interest.  If
+                                stop time is not present, the
+                                notifications will continue until the
+                                subscription is terminated.  Must be
+                                used with startTime.
+                            </xs:documentation>
+                        </xs:annotation>
+                    </xs:element>
+                </xs:sequence>
+            </xs:extension>
+        </xs:complexContent>
+    </xs:complexType>
+    <xs:simpleType name="streamNameType">
+        <xs:annotation>
+            <xs:documentation>
+                The name of an event stream.
+            </xs:documentation>
+        </xs:annotation>
+        <xs:restriction base="xs:string"/>
+    </xs:simpleType>
+    <xs:element name="create-subscription"
+        type="createSubscriptionType"
+        substitutionGroup="netconf:rpcOperation">
+        <xs:annotation>
+            <xs:documentation>
+                The command to create a notification subscription.  It
+                takes as argument the name of the notification stream
+                and filter.  Both of those options
+                limit the content of the subscription.  In addition,
+                there are two time-related parameters, startTime and
+                stopTime, which can be used to select the time interval
+                of interest to the notification replay feature.
+            </xs:documentation>
+        </xs:annotation>
+    </xs:element>
+
+<!-- ************** One-way Operations  ******************-->
+
+     <!-- <Notification> operation -->
+     <xs:complexType name="NotificationContentType"/>
+
+    <xs:element name="notificationContent"
+        type="NotificationContentType" abstract="true"/>
+
+    <xs:complexType name="NotificationType">
+        <xs:sequence>
+            <xs:element name="eventTime" type="xs:dateTime">
+            <xs:element name="sysName" type="xs:string">
+            <xs:element name="sequenceNumber" type="xs:integer">
+              <xs:annotation>
+                <xs:documentation>
+                The time the event was generated by the event source.
+                </xs:documentation>
+              </xs:annotation>
+            </xs:element>
+            <xs:element ref="notificationContent"/>
+        </xs:sequence>
+    </xs:complexType>
+
+    <xs:element name="notification" type="NotificationType"/>
+  </xs:schema>]]></artwork>
+          </figure></t>
+      </section>
+    </section>
+
+    <section anchor="yang-model" title="YANG Module for Event Notifications">
+      <section anchor="yang-tree" title="YANG Tree Diagram">
+        <t>This YANG module updates ietf-notification with sysName and
+        sequenceNumber leaf as described in Section 2 of this document.</t>
+
+        <t><figure>
+            <artwork align="left"><![CDATA[
+module: ietf-notification
+
+  structure notification:
+    +-- eventTime		yang:date-and-time
+    +-- sysName		yang:host
+    +-- sequenceNumber	yang:counter32
+]]></artwork>
+          </figure></t>
+      </section>
+
+      <section anchor="yang-module" title="YANG Module">
+        <t><figure>
+            <artwork align="left"><![CDATA[
+<CODE BEGINS> file "ietf-notification@2023-01-16.yang"
+module ietf-notification {
+  yang-version 1.1;
+  namespace
+    "urn:ietf:params:xml:ns:yang:ietf-notification";
+  prefix inn;
+  import ietf-yang-types {
+    prefix yang;
+    reference
+      "RFC 6991: Common YANG Data Types";
+  }
+  import ietf-yang-structure-ext {
+    prefix sx;
+    reference
+      "RFC 8791: YANG Data Structure Extensions";
+  }
+
+  organization "IETF NETCONF (Network Configuration) Working Group";
+  contact
+    "WG Web:   <http:/tools.ietf.org/wg/netconf/>
+     WG List:  <mailto:netconf@ietf.org>
+
+     Authors:  Thomas Graf
+               <mailto:thomas.graf@swisscom.com>
+               Jean Quilbeuf
+               <mailto:jean.quilbeuf@huawei.com>
+               Alex Huang Feng
+               <mailto:alex.huang-feng@insa-lyon.fr>";
+
+  description
+    "Defines NETCONF Event Notification structure.
+
+    Copyright (c) 2023 IETF Trust and the persons identified as
+    authors of the code.  All rights reserved.
+
+    Redistribution and use in source and binary forms, with or without
+    modification, is permitted pursuant to, and subject to the license
+    terms contained in, the Revised BSD License set forth in Section
+    4.c of the IETF Trust's Legal Provisions Relating to IETF Documents
+    (https://trustee.ietf.org/license-info).
+
+    This version of this YANG module is part of RFC XXXX; see the RFC
+    itself for full legal notices.";
+
+  revision 2023-02-04 {
+    description
+      "Second revision";
+    reference
+      "RFC XXXX: NETCONF Event Notification YANG";
+  }
+
+  sx:structure notification {
+    leaf eventTime {
+      type yang:date-and-time;
+      mandatory true;
+      description
+        "The time the event was generated by the event source.  This
+         parameter is of type dateTime and compliant to [RFC3339].
+         Implementations must support time zones.";
+    }
+    leaf sysName {
+      type yang:host;
+      mandatory true;
+      description
+        "IP address or a DNS domain name from where the message was
+         published from.";
+    }
+    leaf sequenceNumber {
+      type yang:counter32;
+      mandatory true;
+      description
+        "Unique sequence number as described in [RFC3339] for each
+        published message.";
+    }
+  }
+}
+<CODE ENDS>]]></artwork>
+          </figure></t>
+      </section>
+    </section>
+
+    <section anchor="Security" title="Security Considerations">
+      <t>The security considerations for the NETCONF Event notifications are
+      described in <xref target="RFC5277"/>. This documents adds no additional
+      security considerations.</t>
+    </section>
+
+    <section anchor="IANA_Considerations" title="IANA Considerations">
+      <t>This document has no IANA actions.</t>
+    </section>
+
+    <section anchor="Acknowledgements" title="Acknowledgements">
+      <t>The authors would like to thank xxx for their review and valuable
+      comments.</t>
+    </section>
+  </middle>
+
+  <back>
+    <references title="Normative References">
+      <?rfc include='reference.RFC.1213'?>
+
+      <?rfc include='reference.RFC.5277'?>
+
+      <?rfc include='reference.RFC.9187'?>
+
+      <?rfc include='reference.I-D.ahuang-netconf-notif-yang'?>
+
+      <reference anchor="W3C.REC-xml-20081126"
+                 derivedAnchor="W3C.REC-xml-20081126" quoteTitle="true"
+                 target="https://www.w3.org/TR/2008/REC-xml-20081126">
+        <front>
+          <title>Extensible Markup Language (XML) 1.0 (Fifth Edition)</title>
+
+          <author fullname="Tim Bray" initials="T." surname="Bray">
+            <organization showOnFrontPage="true"/>
+          </author>
+
+          <author fullname="Jean Paoli" initials="J." surname="Paoli">
+            <organization showOnFrontPage="true"/>
+          </author>
+
+          <author fullname="Michael Sperberg-McQueen" initials="M."
+                  surname="Sperberg-McQueen">
+            <organization showOnFrontPage="true"/>
+          </author>
+
+          <author fullname="Eve Maler" initials="E." surname="Maler">
+            <organization showOnFrontPage="true"/>
+          </author>
+
+          <author fullname="Francois Yergeau" initials="F." surname="Yergeau">
+            <organization showOnFrontPage="true"/>
+          </author>
+
+          <date month="November" year="2008"/>
+        </front>
+
+        <refcontent>World Wide Web Consortium Recommendation
+        REC-xml-20081126</refcontent>
+      </reference>
+
+      <reference anchor="XMLSchema" derivedAnchor="XMLSchema"
+                 quoteTitle="true"
+                 target="http://www.w3.org/TR/2004/REC-xmlschema-1-20041028/structures.html">
+        <front>
+          <title>"XML Schema Part 1: Structures Second Edition", W3C</title>
+
+          <author fullname="Henry S. Thompson" initials="H."
+                  surname="Thompson">
+            <organization showOnFrontPage="true"/>
+          </author>
+
+          <author fullname="David Beech" initials="D." surname="Beech">
+            <organization showOnFrontPage="true"/>
+          </author>
+
+          <author fullname="Murray Maloney" initials="M." surname="Maloney">
+            <organization showOnFrontPage="true"/>
+          </author>
+
+          <author fullname="Noah Mendelsohn" initials="N."
+                  surname="Mendelsohn">
+            <organization showOnFrontPage="true"/>
+          </author>
+
+          <date month="October" year="2004"/>
+        </front>
+
+        <refcontent>World Wide Web Consortium Recommendation
+        REC-xmlschema-1-20041028</refcontent>
+      </reference>
+    </references>
+
+    <references title="Informative References">
+      <?rfc include='reference.RFC.8640'?>
+
+      <?rfc include='reference.RFC.8641'?>
+    </references>
+  </back>
+</rfc>
