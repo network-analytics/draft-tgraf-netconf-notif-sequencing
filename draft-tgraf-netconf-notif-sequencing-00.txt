@@ -18,7 +18,7 @@ Abstract
 
    This document extends the NETCONF Event Notification header to
    support hostname and sequence numbers to identify from which network
-   node at which time which message was published.  This allows to
+   node and at which time the message was published.  This allows to
    recognize loss, delay and reordering between the publisher and the
    downstream system storing the message.
 
@@ -94,13 +94,13 @@ Table of Contents
    update" and "push-change-update" messages to which the xpath or sub-
    tree was subscribed to.
 
-   When the NETCONF event notification message is being forwarded form
-   the receiver to another system, such as a messaging system or a time
-   series database where the message is being stored, the transport
-   context is being lost since it is not part of the NETCONF event
-   notification message metadata.  Therefore, the downstream system is
-   unable to associate the message to the publishing process nor able to
-   detect message loss or reordering.
+   When the NETCONF event notification message is forwarded from the
+   receiver to another system, such as a messaging system or a time
+   series database where the message is stored, the transport context is
+   lost since it is not part of the NETCONF event notification message
+   metadata.  Therefore, the downstream system is unable to associate
+   the message to the publishing process nor able to detect message loss
+   or reordering.
 
 
 
@@ -114,7 +114,7 @@ Graf, et al.              Expires 8 August 2023                 [Page 2]
 Internet-Draft        YANG Notifications Sequencing        February 2023
 
 
-   Today network operator's workaround this impediment by preserving the
+   Today, network operators workaround this impediment by preserving the
    transport source IP address and sequence numbers of the publishing
    process.  However, this implies that this information needs to be
    encoded somehow in the NETCONF event notification message which
@@ -122,10 +122,10 @@ Internet-Draft        YANG Notifications Sequencing        February 2023
    system.
 
    By extending the NETCONF Event Notification header with sysName as
-   defined in [RFC1213] and a sequence number as being described in
-   [RFC9187], the downstream system is now able to identify from which
-   network node, subscription, time and through the sequence number at
-   which order the message has been published from.
+   defined in [RFC1213] and a sequence number as described in [RFC9187],
+   the downstream system is now able to identify from which network
+   node, subscription, time and through the sequence number at which
+   order the message has been published from.
 
 2.  Extend the NETCONF Event Notification Header
 
