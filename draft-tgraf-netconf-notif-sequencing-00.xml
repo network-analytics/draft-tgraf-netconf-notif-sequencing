@@ -447,7 +447,8 @@ module ietf-notification {
     </section>
 
     <section anchor="IANA_Considerations" title="IANA Considerations">
-      <t>This document has no IANA actions.</t>
+      <t>TBD: Ask IANA the yang module name.</t>
+      <!-- <t>This document has no IANA actions.</t> -->
     </section>
 
     <section anchor="Acknowledgements" title="Acknowledgements">

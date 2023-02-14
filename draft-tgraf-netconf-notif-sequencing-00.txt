@@ -475,7 +475,7 @@ Internet-Draft        YANG Notifications Sequencing        February 2023
 
 6.  IANA Considerations
 
-   This document has no IANA actions.
+   TBD: Ask IANA the yang module name.
 
 7.  Acknowledgements
 
