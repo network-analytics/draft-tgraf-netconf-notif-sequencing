@@ -81,14 +81,25 @@
 
   <middle>
     <section anchor="Introduction" title="Introduction">
-      <t>Section 2 of <xref target="RFC5277"/> describes the NETCONF event
+
+      <t><xref target="RFC5277"/> describes the NETCONF event notification
+      header using a XML Schema. In the metadata of the event notification header,
+      only the eventTime is present indicating at which time the notification
+      message was published. For other encodings, the same schema is implemented using
+      a YANG module in <xref target="I-D.ahuang-netconf-notif-yang"/>.
+      Furthermore, in Section 3.7 of <xref target="RFC8641"/>, the Subscription Id
+      is added to the "push-update" and "push-change-update" notification messages
+      allowing to recognize to which xpath or sub-tree the node was subscribed to.
+      </t>
+
+      <!-- <t>Section 2 of <xref target="RFC5277"/> describes the NETCONF event
       notification header in XML and <xref
       target="I-D.ahuang-netconf-notif-yang"/> in YANG. Section 2.2.1 of <xref
       target="RFC5277"/> describes the eventTime. Indicating at which time the
       NETCONF event notification message was published. Section 3.7 of <xref
       target="RFC8641"/> describes the Subscription Id in the "push-update"
       and "push-change-update" messages to which the xpath or sub-tree was
-      subscribed to.</t>
+      subscribed to.</t> -->
 
       <t>When the NETCONF event notification message is forwarded from
       the receiver to another system, such as a messaging system or a time
@@ -101,14 +112,14 @@
       <t>Today, network operators workaround this impediment by preserving the
       transport source IP address and sequence numbers of the publishing
       process. However, this implies that this information needs to be encoded
-      somehow in the NETCONF event notification message which impacts the
+      in the NETCONF event notification message which impacts the
       semantic readability of the message in the downstream system.</t>
 
       <t>By extending the NETCONF Event Notification header with sysName as
       defined in <xref target="RFC1213"/> and a sequence number as
-      described in <xref target="RFC9187"/>, the downstream system is now able
-      to identify from which network node, subscription, time and through the
-      sequence number at which order the message has been published from.</t>
+      described in <xref target="RFC9187"/>, the downstream system is not only able
+      to identify from which network node, subscription and time the message was
+      published but also, the order of the published messages.</t>
     </section>
 
     <section anchor="Streaming-Update"
@@ -322,9 +333,9 @@
 module: ietf-notification
 
   structure notification:
-    +-- eventTime		yang:date-and-time
-    +-- sysName		yang:host
-    +-- sequenceNumber	yang:counter32
+    +-- eventTime         yang:date-and-time
+    +-- sysName           inet:host
+    +-- sequenceNumber    yang:counter32
 ]]></artwork>
           </figure></t>
       </section>
@@ -332,12 +343,17 @@ module: ietf-notification
       <section anchor="yang-module" title="YANG Module">
         <t><figure>
             <artwork align="left"><![CDATA[
-<CODE BEGINS> file "ietf-notification@2023-01-16.yang"
+<CODE BEGINS> file "ietf-notification@2023-02-14.yang"
 module ietf-notification {
   yang-version 1.1;
   namespace
     "urn:ietf:params:xml:ns:yang:ietf-notification";
   prefix inn;
+  import ietf-inet-types {
+    prefix inet;
+    reference
+      "RFC 6991: Common YANG Data Types";
+  }
   import ietf-yang-types {
     prefix yang;
     reference
@@ -356,8 +372,10 @@ module ietf-notification {
 
      Authors:  Thomas Graf
                <mailto:thomas.graf@swisscom.com>
-               Jean Quilbeuf
-               <mailto:jean.quilbeuf@huawei.com>
+               Benoit Claise
+               <mailto:benoit.claise@huawei.com>
+               Pierre Francois
+               <mailto:pierre.francois@insa-lyon.fr>
                Alex Huang Feng
                <mailto:alex.huang-feng@insa-lyon.fr>";
 
@@ -376,11 +394,20 @@ module ietf-notification {
     This version of this YANG module is part of RFC XXXX; see the RFC
     itself for full legal notices.";
 
-  revision 2023-02-04 {
+  revision 2023-02-14 {
     description
-      "Second revision";
+      "Adds the sysName leaf and sequenceNumber leaf to the NETCONF 
+      event notification structure";
     reference
-      "RFC XXXX: NETCONF Event Notification YANG";
+      "RFC XXXX: YANG Notifications Sequencing";
+  }
+
+  revision 2023-01-16 {
+    description
+      "First revision.
+      TBD: to be updated and synced with draft-ahuang-netconf-notif-yang.";
+    reference
+      "RFC YYYY: NETCONF Event Notification YANG";
   }
 
   sx:structure notification {
@@ -393,7 +420,7 @@ module ietf-notification {
          Implementations must support time zones.";
     }
     leaf sysName {
-      type yang:host;
+      type inet:host;
       mandatory true;
       description
         "IP address or a DNS domain name from where the message was

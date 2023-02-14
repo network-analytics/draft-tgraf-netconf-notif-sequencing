@@ -86,13 +86,15 @@ Table of Contents
 
 1.  Introduction
 
-   Section 2 of [RFC5277] describes the NETCONF event notification
-   header in XML and [I-D.ahuang-netconf-notif-yang] in YANG.
-   Section 2.2.1 of [RFC5277] describes the eventTime.  Indicating at
-   which time the NETCONF event notification message was published.
-   Section 3.7 of [RFC8641] describes the Subscription Id in the "push-
-   update" and "push-change-update" messages to which the xpath or sub-
-   tree was subscribed to.
+   [RFC5277] describes the NETCONF event notification header using a XML
+   Schema.  In the metadata of the event notification header, only the
+   eventTime is present indicating at which time the notification
+   message was published.  For other encodings, the same schema is
+   implemented using a YANG module in [I-D.ahuang-netconf-notif-yang].
+   Furthermore, in Section 3.7 of [RFC8641], the Subscription Id is
+   added to the "push-update" and "push-change-update" notification
+   messages allowing to recognize to which xpath or sub-tree the node
+   was subscribed to.
 
    When the NETCONF event notification message is forwarded from the
    receiver to another system, such as a messaging system or a time
@@ -107,8 +109,6 @@ Table of Contents
 
 
 
-
-
 Graf, et al.              Expires 8 August 2023                 [Page 2]
 
 Internet-Draft        YANG Notifications Sequencing        February 2023
@@ -117,15 +117,14 @@ Internet-Draft        YANG Notifications Sequencing        February 2023
    Today, network operators workaround this impediment by preserving the
    transport source IP address and sequence numbers of the publishing
    process.  However, this implies that this information needs to be
-   encoded somehow in the NETCONF event notification message which
-   impacts the semantic readability of the message in the downstream
-   system.
+   encoded in the NETCONF event notification message which impacts the
+   semantic readability of the message in the downstream system.
 
    By extending the NETCONF Event Notification header with sysName as
    defined in [RFC1213] and a sequence number as described in [RFC9187],
-   the downstream system is now able to identify from which network
-   node, subscription, time and through the sequence number at which
-   order the message has been published from.
+   the downstream system is not only able to identify from which network
+   node, subscription and time the message was published but also, the
+   order of the published messages.
 
 2.  Extend the NETCONF Event Notification Header
 
@@ -161,7 +160,8 @@ Internet-Draft        YANG Notifications Sequencing        February 2023
    </push-update>
   </notification>
 
-
+          Figure 1: XML Push Example for a subscription-modified
+                           notification message
 
 
 
@@ -169,9 +169,6 @@ Graf, et al.              Expires 8 August 2023                 [Page 3]
 
 Internet-Draft        YANG Notifications Sequencing        February 2023
 
-
-          Figure 1: XML Push Example for a subscription-modified
-                           notification message
 
 3.  XML Schema for Event Notifications
 
@@ -218,6 +215,9 @@ Internet-Draft        YANG Notifications Sequencing        February 2023
                         type="streamNameType" minOccurs="0">
                         <xs:annotation>
                             <xs:documentation>
+                               An optional parameter that indicates
+                               which stream of events is of interest.
+                               If not present, then events in the
 
 
 
@@ -226,9 +226,6 @@ Graf, et al.              Expires 8 August 2023                 [Page 4]
 Internet-Draft        YANG Notifications Sequencing        February 2023
 
 
-                               An optional parameter that indicates
-                               which stream of events is of interest.
-                               If not present, then events in the
                                default NETCONF stream will be sent.
                             </xs:documentation>
                         </xs:annotation>
@@ -274,6 +271,9 @@ Internet-Draft        YANG Notifications Sequencing        February 2023
                                 used with startTime.
                             </xs:documentation>
                         </xs:annotation>
+                    </xs:element>
+                </xs:sequence>
+            </xs:extension>
 
 
 
@@ -282,9 +282,6 @@ Graf, et al.              Expires 8 August 2023                 [Page 5]
 Internet-Draft        YANG Notifications Sequencing        February 2023
 
 
-                    </xs:element>
-                </xs:sequence>
-            </xs:extension>
         </xs:complexContent>
     </xs:complexType>
     <xs:simpleType name="streamNameType">
@@ -330,6 +327,9 @@ Internet-Draft        YANG Notifications Sequencing        February 2023
                 </xs:documentation>
               </xs:annotation>
             </xs:element>
+            <xs:element ref="notificationContent"/>
+        </xs:sequence>
+    </xs:complexType>
 
 
 
@@ -337,10 +337,6 @@ Graf, et al.              Expires 8 August 2023                 [Page 6]
 
 Internet-Draft        YANG Notifications Sequencing        February 2023
 
-
-            <xs:element ref="notificationContent"/>
-        </xs:sequence>
-    </xs:complexType>
 
     <xs:element name="notification" type="NotificationType"/>
   </xs:schema>
@@ -355,18 +351,23 @@ Internet-Draft        YANG Notifications Sequencing        February 2023
    module: ietf-notification
 
      structure notification:
-       +-- eventTime               yang:date-and-time
-       +-- sysName         yang:host
-       +-- sequenceNumber  yang:counter32
+       +-- eventTime         yang:date-and-time
+       +-- sysName           inet:host
+       +-- sequenceNumber    yang:counter32
 
 4.2.  YANG Module
 
-   <CODE BEGINS> file "ietf-notification@2023-01-16.yang"
+   <CODE BEGINS> file "ietf-notification@2023-02-14.yang"
    module ietf-notification {
      yang-version 1.1;
      namespace
        "urn:ietf:params:xml:ns:yang:ietf-notification";
      prefix inn;
+     import ietf-inet-types {
+       prefix inet;
+       reference
+         "RFC 6991: Common YANG Data Types";
+     }
      import ietf-yang-types {
        prefix yang;
        reference
@@ -385,7 +386,6 @@ Internet-Draft        YANG Notifications Sequencing        February 2023
 
         Authors:  Thomas Graf
                   <mailto:thomas.graf@swisscom.com>
-                  Jean Quilbeuf
 
 
 
@@ -394,7 +394,10 @@ Graf, et al.              Expires 8 August 2023                 [Page 7]
 Internet-Draft        YANG Notifications Sequencing        February 2023
 
 
-                  <mailto:jean.quilbeuf@huawei.com>
+                  Benoit Claise
+                  <mailto:benoit.claise@huawei.com>
+                  Pierre Francois
+                  <mailto:pierre.francois@insa-lyon.fr>
                   Alex Huang Feng
                   <mailto:alex.huang-feng@insa-lyon.fr>";
 
@@ -413,11 +416,20 @@ Internet-Draft        YANG Notifications Sequencing        February 2023
        This version of this YANG module is part of RFC XXXX; see the RFC
        itself for full legal notices.";
 
-     revision 2023-02-04 {
+     revision 2023-02-14 {
        description
-         "Second revision";
+         "Adds the sysName leaf and sequenceNumber leaf to the NETCONF
+         event notification structure";
        reference
-         "RFC XXXX: NETCONF Event Notification YANG";
+         "RFC XXXX: YANG Notifications Sequencing";
+     }
+
+     revision 2023-01-16 {
+       description
+         "First revision.
+         TBD: to be updated and synced with draft-ahuang-netconf-notif-yang.";
+       reference
+         "RFC YYYY: NETCONF Event Notification YANG";
      }
 
      sx:structure notification {
@@ -430,7 +442,15 @@ Internet-Draft        YANG Notifications Sequencing        February 2023
             Implementations must support time zones.";
        }
        leaf sysName {
-         type yang:host;
+
+
+
+Graf, et al.              Expires 8 August 2023                 [Page 8]
+
+Internet-Draft        YANG Notifications Sequencing        February 2023
+
+
+         type inet:host;
          mandatory true;
          description
            "IP address or a DNS domain name from where the message was
@@ -442,14 +462,6 @@ Internet-Draft        YANG Notifications Sequencing        February 2023
          description
            "Unique sequence number as described in [RFC3339] for each
            published message.";
-
-
-
-Graf, et al.              Expires 8 August 2023                 [Page 8]
-
-Internet-Draft        YANG Notifications Sequencing        February 2023
-
-
        }
      }
    }
@@ -486,18 +498,6 @@ Internet-Draft        YANG Notifications Sequencing        February 2023
               STD 17, RFC 1213, DOI 10.17487/RFC1213, March 1991,
               <https://www.rfc-editor.org/info/rfc1213>.
 
-   [RFC5277]  Chisholm, S. and H. Trevino, "NETCONF Event
-              Notifications", RFC 5277, DOI 10.17487/RFC5277, July 2008,
-              <https://www.rfc-editor.org/info/rfc5277>.
-
-   [RFC9187]  Touch, J., "Sequence Number Extension for Windowed
-              Protocols", RFC 9187, DOI 10.17487/RFC9187, January 2022,
-              <https://www.rfc-editor.org/info/rfc9187>.
-
-
-
-
-
 
 
 
@@ -505,6 +505,14 @@ Graf, et al.              Expires 8 August 2023                 [Page 9]
 
 Internet-Draft        YANG Notifications Sequencing        February 2023
 
+
+   [RFC5277]  Chisholm, S. and H. Trevino, "NETCONF Event
+              Notifications", RFC 5277, DOI 10.17487/RFC5277, July 2008,
+              <https://www.rfc-editor.org/info/rfc5277>.
+
+   [RFC9187]  Touch, J., "Sequence Number Extension for Windowed
+              Protocols", RFC 9187, DOI 10.17487/RFC9187, January 2022,
+              <https://www.rfc-editor.org/info/rfc9187>.
 
    [W3C.REC-xml-20081126]
               Bray, T., Paoli, J., Sperberg-McQueen, M., Maler, E., and
@@ -547,6 +555,13 @@ Authors' Addresses
    Email: jean.quilbeuf@huawei.com
 
 
+
+
+Graf, et al.              Expires 8 August 2023                [Page 10]
+
+Internet-Draft        YANG Notifications Sequencing        February 2023
+
+
    Alex Huang Feng
    INSA-Lyon
    Lyon
@@ -557,4 +572,45 @@ Authors' Addresses
 
 
 
-Graf, et al.              Expires 8 August 2023                [Page 10]
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Graf, et al.              Expires 8 August 2023                [Page 11]
