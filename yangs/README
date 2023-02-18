@@ -1,0 +1,11 @@
+## YANG
+
+### Augmenting ietf-notification
+```shell
+$ pyang augmenting/ietf-notification-sequencing.yang --tree-print-structures -f tree -p dependencies
+```
+
+### Using a new revision
+```shell
+$ pyang new-revision/ietf-notification.yang --tree-print-structures -f tree
+```
