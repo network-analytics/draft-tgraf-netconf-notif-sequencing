@@ -68,57 +68,47 @@
       </address>
     </author>
 
-    <date day="4" month="February" year="2023"/>
+    <date day="18" month="February" year="2023"/>
 
     <abstract>
       <t>This document extends the NETCONF Event Notification header to
       support hostname and sequence numbers to identify from which network
-      node and at which time the message was published. This allows to recognize
-      loss, delay and reordering between the publisher and the downstream
-      system storing the message.</t>
+      node and at which time the message was published. This allows to
+      recognize loss, delay and reordering between the publisher and the
+      downstream system storing the message.</t>
     </abstract>
   </front>
 
   <middle>
     <section anchor="Introduction" title="Introduction">
-
       <t><xref target="RFC5277"/> describes the NETCONF event notification
-      header using a XML Schema. In the metadata of the event notification header,
-      only the eventTime is present indicating at which time the notification
-      message was published. For other encodings, the same schema is implemented using
-      a YANG module in <xref target="I-D.ahuang-netconf-notif-yang"/>.
-      Furthermore, in Section 3.7 of <xref target="RFC8641"/>, the Subscription Id
-      is added to the "push-update" and "push-change-update" notification messages
-      allowing to recognize to which xpath or sub-tree the node was subscribed to.
-      </t>
+      header using a XML Schema. In the metadata of the event notification
+      header, only the eventTime is present indicating at which time the
+      notification message was published. For other encodings, the same schema
+      is implemented using a YANG module in <xref
+      target="I-D.ahuang-netconf-notif-yang"/>. Furthermore, in Section 3.7 of
+      <xref target="RFC8641"/>, the subscription ID is added to the
+      "push-update" and "push-change-update" notification messages allowing to
+      recognize to which xpath or sub-tree the node was subscribed to.</t>
 
-      <!-- <t>Section 2 of <xref target="RFC5277"/> describes the NETCONF event
-      notification header in XML and <xref
-      target="I-D.ahuang-netconf-notif-yang"/> in YANG. Section 2.2.1 of <xref
-      target="RFC5277"/> describes the eventTime. Indicating at which time the
-      NETCONF event notification message was published. Section 3.7 of <xref
-      target="RFC8641"/> describes the Subscription Id in the "push-update"
-      and "push-change-update" messages to which the xpath or sub-tree was
-      subscribed to.</t> -->
-
-      <t>When the NETCONF event notification message is forwarded from
-      the receiver to another system, such as a messaging system or a time
-      series database where the message is stored, the transport context
-      is lost since it is not part of the NETCONF event notification
-      message metadata. Therefore, the downstream system is unable to
-      associate the message to the publishing process nor able to detect
-      message loss or reordering.</t>
+      <t>When the NETCONF event notification message is forwarded from the
+      receiver to another system, such as a messaging system or a time series
+      database where the message is stored, the transport context is lost
+      since it is not part of the NETCONF event notification message metadata.
+      Therefore, the downstream system is unable to associate the message to
+      the publishing process nor able to detect message loss or
+      reordering.</t>
 
       <t>Today, network operators workaround this impediment by preserving the
       transport source IP address and sequence numbers of the publishing
       process. However, this implies that this information needs to be encoded
-      in the NETCONF event notification message which impacts the
-      semantic readability of the message in the downstream system.</t>
+      in the NETCONF event notification message which impacts the semantic
+      readability of the message in the downstream system.</t>
 
       <t>By extending the NETCONF Event Notification header with sysName as
-      defined in <xref target="RFC1213"/> and a sequence number as
-      described in <xref target="RFC9187"/>, the downstream system is not only able
-      to identify from which network node, subscription and time the message was
+      defined in <xref target="RFC1213"/> and a sequence number as described
+      in <xref target="RFC9187"/>, the downstream system is not only able to
+      identify from which network node, subscription, and time the message was
       published but also, the order of the published messages.</t>
     </section>
 
@@ -169,158 +159,6 @@
 </notification>        
         ]]></artwork>
       </figure>
-    </section>
-
-    <section anchor="xml-event-notif"
-             title="XML Schema for Event Notifications">
-      <section anchor="xml-schema" title="XML Schema">
-        <t>The following <xref target="XMLSchema"/> updates NETCONF Event
-        Notifications with sysName and sequenceNumber leaf as described in
-        Section 2 of this document.</t>
-
-        <t><figure>
-            <artwork align="left"><![CDATA[
-<?xml version="1.0" encoding="UTF-8"?>
-  <xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema"
-     xmlns="urn:ietf:params:xml:ns:netconf:notification:1.0"
-     xmlns:netconf="urn:ietf:params:xml:ns:netconf:base:1.0"
-     targetNamespace=
-        "urn:ietf:params:xml:ns:netconf:notification:1.0"
-     elementFormDefault="qualified"
-     attributeFormDefault="unqualified"
-       xml:lang="en">
-    <!-- import standard XML definitions -->
-
-     <xs:import namespace="http://www.w3.org/XML/1998/namespace"
-                schemaLocation="http://www.w3.org/2001/xml.xsd">
-       <xs:annotation>
-         <xs:documentation>
-           This import accesses the xml: attribute groups for the
-           xml:lang as declared on the error-message element.
-         </xs:documentation>
-       </xs:annotation>
-     </xs:import>
-
-     <!-- import base netconf definitions -->
-     <xs:import namespace="urn:ietf:params:xml:ns:netconf:base:1.0"
-       schemaLocation="netconf.xsd"/>
-
-<!-- ************** Symmetrical Operations  ********************-->
-
-     <!-- <create-subscription> operation -->
-
-    <xs:complexType name="createSubscriptionType">
-        <xs:complexContent>
-            <xs:extension base="netconf:rpcOperationType">
-                <xs:sequence>
-                    <xs:element name="stream"
-                        type="streamNameType" minOccurs="0">
-                        <xs:annotation>
-                            <xs:documentation>
-                               An optional parameter that indicates
-                               which stream of events is of interest.
-                               If not present, then events in the
-                               default NETCONF stream will be sent.
-                            </xs:documentation>
-                        </xs:annotation>
-                    </xs:element>
-                        <xs:element name="filter"
-                            type="netconf:filterInlineType"
-                            minOccurs="0">
-                            <xs:annotation>
-                                <xs:documentation>
-                                    An optional parameter that indicates
-                                    which subset of all possible events
-                                    is of interest.  The format of this
-                                    parameter is the same as that of the
-                                    filter parameter in the NETCONF
-                                    protocol operations.  If not
-                                    present, all events not precluded
-                                    by other parameters will be sent.
-                                </xs:documentation>
-                            </xs:annotation>
-                        </xs:element>
-                    <xs:element name="startTime" type="xs:dateTime"
-                        minOccurs="0" >
-                        <xs:annotation>
-                            <xs:documentation>
-                                A parameter used to trigger the replay
-                                feature indicating that the replay
-                                should start at the time specified.  If
-                                start time is not present, this is not a
-                                replay subscription.
-                            </xs:documentation>
-                        </xs:annotation>
-                    </xs:element>
-                    <xs:element name="stopTime" type="xs:dateTime"
-                        minOccurs="0" >
-                        <xs:annotation>
-                            <xs:documentation>
-                                An optional parameter used with the
-                                optional replay feature to indicate the
-                                newest notifications of interest.  If
-                                stop time is not present, the
-                                notifications will continue until the
-                                subscription is terminated.  Must be
-                                used with startTime.
-                            </xs:documentation>
-                        </xs:annotation>
-                    </xs:element>
-                </xs:sequence>
-            </xs:extension>
-        </xs:complexContent>
-    </xs:complexType>
-    <xs:simpleType name="streamNameType">
-        <xs:annotation>
-            <xs:documentation>
-                The name of an event stream.
-            </xs:documentation>
-        </xs:annotation>
-        <xs:restriction base="xs:string"/>
-    </xs:simpleType>
-    <xs:element name="create-subscription"
-        type="createSubscriptionType"
-        substitutionGroup="netconf:rpcOperation">
-        <xs:annotation>
-            <xs:documentation>
-                The command to create a notification subscription.  It
-                takes as argument the name of the notification stream
-                and filter.  Both of those options
-                limit the content of the subscription.  In addition,
-                there are two time-related parameters, startTime and
-                stopTime, which can be used to select the time interval
-                of interest to the notification replay feature.
-            </xs:documentation>
-        </xs:annotation>
-    </xs:element>
-
-<!-- ************** One-way Operations  ******************-->
-
-     <!-- <Notification> operation -->
-     <xs:complexType name="NotificationContentType"/>
-
-    <xs:element name="notificationContent"
-        type="NotificationContentType" abstract="true"/>
-
-    <xs:complexType name="NotificationType">
-        <xs:sequence>
-            <xs:element name="eventTime" type="xs:dateTime">
-            <xs:element name="sysName" type="xs:string">
-            <xs:element name="sequenceNumber" type="xs:integer">
-              <xs:annotation>
-                <xs:documentation>
-                The time the event was generated by the event source.
-                </xs:documentation>
-              </xs:annotation>
-            </xs:element>
-            <xs:element ref="notificationContent"/>
-        </xs:sequence>
-    </xs:complexType>
-
-    <xs:element name="notification" type="NotificationType"/>
-  </xs:schema>]]></artwork>
-          </figure></t>
-      </section>
     </section>
 
     <section anchor="yang-model" title="YANG Module for Event Notifications">
@@ -448,6 +286,7 @@ module ietf-notification {
 
     <section anchor="IANA_Considerations" title="IANA Considerations">
       <t>TBD: Ask IANA the yang module name.</t>
+
       <!-- <t>This document has no IANA actions.</t> -->
     </section>
 
@@ -460,8 +299,11 @@ module ietf-notification {
   <back>
     <references title="Normative References">
       <?rfc include='http://xml.resource.org/public/rfc/bibxml/reference.RFC.1213.xml'?>
+
       <?rfc include='http://xml.resource.org/public/rfc/bibxml/reference.RFC.5277.xml'?>
+
       <?rfc include='http://xml.resource.org/public/rfc/bibxml/reference.RFC.9187.xml'?>
+
       <?rfc include='http://xml.resource.org/public/rfc/bibxml-ids/reference.I-D.ahuang-netconf-notif-yang.xml'?>
 
       <!-- <?rfc include='reference.I-D.ahuang-netconf-notif-yang'?> -->
@@ -499,41 +341,11 @@ module ietf-notification {
         <refcontent>World Wide Web Consortium Recommendation
         REC-xml-20081126</refcontent>
       </reference>
-
-      <reference anchor="XMLSchema" derivedAnchor="XMLSchema"
-                 quoteTitle="true"
-                 target="http://www.w3.org/TR/2004/REC-xmlschema-1-20041028/structures.html">
-        <front>
-          <title>"XML Schema Part 1: Structures Second Edition", W3C</title>
-
-          <author fullname="Henry S. Thompson" initials="H."
-                  surname="Thompson">
-            <organization showOnFrontPage="true"/>
-          </author>
-
-          <author fullname="David Beech" initials="D." surname="Beech">
-            <organization showOnFrontPage="true"/>
-          </author>
-
-          <author fullname="Murray Maloney" initials="M." surname="Maloney">
-            <organization showOnFrontPage="true"/>
-          </author>
-
-          <author fullname="Noah Mendelsohn" initials="N."
-                  surname="Mendelsohn">
-            <organization showOnFrontPage="true"/>
-          </author>
-
-          <date month="October" year="2004"/>
-        </front>
-
-        <refcontent>World Wide Web Consortium Recommendation
-        REC-xmlschema-1-20041028</refcontent>
-      </reference>
     </references>
 
     <references title="Informative References">
       <?rfc include='http://xml.resource.org/public/rfc/bibxml/reference.RFC.8640.xml'?>
+
       <?rfc include='http://xml.resource.org/public/rfc/bibxml/reference.RFC.8641.xml'?>
     </references>
   </back>

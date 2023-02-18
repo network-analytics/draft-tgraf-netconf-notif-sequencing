@@ -5,10 +5,10 @@
 Network Working Group                                            T. Graf
 Internet-Draft                                                  Swisscom
 Intended status: Standards Track                             J. Quilbeuf
-Expires: 8 August 2023                                            Huawei
+Expires: 22 August 2023                                           Huawei
                                                            A. Huang Feng
                                                                INSA-Lyon
-                                                         4 February 2023
+                                                        18 February 2023
 
 
         Support of Hostname and Sequencing in YANG Notifications
@@ -37,7 +37,7 @@ Status of This Memo
    time.  It is inappropriate to use Internet-Drafts as reference
    material or to cite them other than as "work in progress."
 
-   This Internet-Draft will expire on 8 August 2023.
+   This Internet-Draft will expire on 22 August 2023.
 
 Copyright Notice
 
@@ -53,7 +53,7 @@ Copyright Notice
 
 
 
-Graf, et al.              Expires 8 August 2023                 [Page 1]
+Graf, et al.             Expires 22 August 2023                 [Page 1]
 
 Internet-Draft        YANG Notifications Sequencing        February 2023
 
@@ -71,18 +71,16 @@ Table of Contents
 
    1.  Introduction  . . . . . . . . . . . . . . . . . . . . . . . .   2
    2.  Extend the NETCONF Event Notification Header  . . . . . . . .   3
-   3.  XML Schema for Event Notifications  . . . . . . . . . . . . .   4
-     3.1.  XML Schema  . . . . . . . . . . . . . . . . . . . . . . .   4
-   4.  YANG Module for Event Notifications . . . . . . . . . . . . .   7
-     4.1.  YANG Tree Diagram . . . . . . . . . . . . . . . . . . . .   7
-     4.2.  YANG Module . . . . . . . . . . . . . . . . . . . . . . .   7
-   5.  Security Considerations . . . . . . . . . . . . . . . . . . .   9
-   6.  IANA Considerations . . . . . . . . . . . . . . . . . . . . .   9
-   7.  Acknowledgements  . . . . . . . . . . . . . . . . . . . . . .   9
-   8.  References  . . . . . . . . . . . . . . . . . . . . . . . . .   9
-     8.1.  Normative References  . . . . . . . . . . . . . . . . . .   9
-     8.2.  Informative References  . . . . . . . . . . . . . . . . .  10
-   Authors' Addresses  . . . . . . . . . . . . . . . . . . . . . . .  10
+   3.  YANG Module for Event Notifications . . . . . . . . . . . . .   4
+     3.1.  YANG Tree Diagram . . . . . . . . . . . . . . . . . . . .   4
+     3.2.  YANG Module . . . . . . . . . . . . . . . . . . . . . . .   4
+   4.  Security Considerations . . . . . . . . . . . . . . . . . . .   6
+   5.  IANA Considerations . . . . . . . . . . . . . . . . . . . . .   6
+   6.  Acknowledgements  . . . . . . . . . . . . . . . . . . . . . .   6
+   7.  References  . . . . . . . . . . . . . . . . . . . . . . . . .   6
+     7.1.  Normative References  . . . . . . . . . . . . . . . . . .   6
+     7.2.  Informative References  . . . . . . . . . . . . . . . . .   7
+   Authors' Addresses  . . . . . . . . . . . . . . . . . . . . . . .   7
 
 1.  Introduction
 
@@ -91,7 +89,7 @@ Table of Contents
    eventTime is present indicating at which time the notification
    message was published.  For other encodings, the same schema is
    implemented using a YANG module in [I-D.ahuang-netconf-notif-yang].
-   Furthermore, in Section 3.7 of [RFC8641], the Subscription Id is
+   Furthermore, in Section 3.7 of [RFC8641], the subscription ID is
    added to the "push-update" and "push-change-update" notification
    messages allowing to recognize to which xpath or sub-tree the node
    was subscribed to.
@@ -109,7 +107,9 @@ Table of Contents
 
 
 
-Graf, et al.              Expires 8 August 2023                 [Page 2]
+
+
+Graf, et al.             Expires 22 August 2023                 [Page 2]
 
 Internet-Draft        YANG Notifications Sequencing        February 2023
 
@@ -123,7 +123,7 @@ Internet-Draft        YANG Notifications Sequencing        February 2023
    By extending the NETCONF Event Notification header with sysName as
    defined in [RFC1213] and a sequence number as described in [RFC9187],
    the downstream system is not only able to identify from which network
-   node, subscription and time the message was published but also, the
+   node, subscription, and time the message was published but also, the
    order of the published messages.
 
 2.  Extend the NETCONF Event Notification Header
@@ -165,185 +165,14 @@ Internet-Draft        YANG Notifications Sequencing        February 2023
 
 
 
-Graf, et al.              Expires 8 August 2023                 [Page 3]
+Graf, et al.             Expires 22 August 2023                 [Page 3]
 
 Internet-Draft        YANG Notifications Sequencing        February 2023
 
 
-3.  XML Schema for Event Notifications
+3.  YANG Module for Event Notifications
 
-3.1.  XML Schema
-
-   The following [XMLSchema] updates NETCONF Event Notifications with
-   sysName and sequenceNumber leaf as described in Section 2 of this
-   document.
-
-<?xml version="1.0" encoding="UTF-8"?>
-  <xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema"
-     xmlns="urn:ietf:params:xml:ns:netconf:notification:1.0"
-     xmlns:netconf="urn:ietf:params:xml:ns:netconf:base:1.0"
-     targetNamespace=
-        "urn:ietf:params:xml:ns:netconf:notification:1.0"
-     elementFormDefault="qualified"
-     attributeFormDefault="unqualified"
-       xml:lang="en">
-    <!-- import standard XML definitions -->
-
-     <xs:import namespace="http://www.w3.org/XML/1998/namespace"
-                schemaLocation="http://www.w3.org/2001/xml.xsd">
-       <xs:annotation>
-         <xs:documentation>
-           This import accesses the xml: attribute groups for the
-           xml:lang as declared on the error-message element.
-         </xs:documentation>
-       </xs:annotation>
-     </xs:import>
-
-     <!-- import base netconf definitions -->
-     <xs:import namespace="urn:ietf:params:xml:ns:netconf:base:1.0"
-       schemaLocation="netconf.xsd"/>
-
-<!-- ************** Symmetrical Operations  ********************-->
-
-     <!-- <create-subscription> operation -->
-
-    <xs:complexType name="createSubscriptionType">
-        <xs:complexContent>
-            <xs:extension base="netconf:rpcOperationType">
-                <xs:sequence>
-                    <xs:element name="stream"
-                        type="streamNameType" minOccurs="0">
-                        <xs:annotation>
-                            <xs:documentation>
-                               An optional parameter that indicates
-                               which stream of events is of interest.
-                               If not present, then events in the
-
-
-
-Graf, et al.              Expires 8 August 2023                 [Page 4]
-
-Internet-Draft        YANG Notifications Sequencing        February 2023
-
-
-                               default NETCONF stream will be sent.
-                            </xs:documentation>
-                        </xs:annotation>
-                    </xs:element>
-                        <xs:element name="filter"
-                            type="netconf:filterInlineType"
-                            minOccurs="0">
-                            <xs:annotation>
-                                <xs:documentation>
-                                    An optional parameter that indicates
-                                    which subset of all possible events
-                                    is of interest.  The format of this
-                                    parameter is the same as that of the
-                                    filter parameter in the NETCONF
-                                    protocol operations.  If not
-                                    present, all events not precluded
-                                    by other parameters will be sent.
-                                </xs:documentation>
-                            </xs:annotation>
-                        </xs:element>
-                    <xs:element name="startTime" type="xs:dateTime"
-                        minOccurs="0" >
-                        <xs:annotation>
-                            <xs:documentation>
-                                A parameter used to trigger the replay
-                                feature indicating that the replay
-                                should start at the time specified.  If
-                                start time is not present, this is not a
-                                replay subscription.
-                            </xs:documentation>
-                        </xs:annotation>
-                    </xs:element>
-                    <xs:element name="stopTime" type="xs:dateTime"
-                        minOccurs="0" >
-                        <xs:annotation>
-                            <xs:documentation>
-                                An optional parameter used with the
-                                optional replay feature to indicate the
-                                newest notifications of interest.  If
-                                stop time is not present, the
-                                notifications will continue until the
-                                subscription is terminated.  Must be
-                                used with startTime.
-                            </xs:documentation>
-                        </xs:annotation>
-                    </xs:element>
-                </xs:sequence>
-            </xs:extension>
-
-
-
-Graf, et al.              Expires 8 August 2023                 [Page 5]
-
-Internet-Draft        YANG Notifications Sequencing        February 2023
-
-
-        </xs:complexContent>
-    </xs:complexType>
-    <xs:simpleType name="streamNameType">
-        <xs:annotation>
-            <xs:documentation>
-                The name of an event stream.
-            </xs:documentation>
-        </xs:annotation>
-        <xs:restriction base="xs:string"/>
-    </xs:simpleType>
-    <xs:element name="create-subscription"
-        type="createSubscriptionType"
-        substitutionGroup="netconf:rpcOperation">
-        <xs:annotation>
-            <xs:documentation>
-                The command to create a notification subscription.  It
-                takes as argument the name of the notification stream
-                and filter.  Both of those options
-                limit the content of the subscription.  In addition,
-                there are two time-related parameters, startTime and
-                stopTime, which can be used to select the time interval
-                of interest to the notification replay feature.
-            </xs:documentation>
-        </xs:annotation>
-    </xs:element>
-
-<!-- ************** One-way Operations  ******************-->
-
-     <!-- <Notification> operation -->
-     <xs:complexType name="NotificationContentType"/>
-
-    <xs:element name="notificationContent"
-        type="NotificationContentType" abstract="true"/>
-
-    <xs:complexType name="NotificationType">
-        <xs:sequence>
-            <xs:element name="eventTime" type="xs:dateTime">
-            <xs:element name="sysName" type="xs:string">
-            <xs:element name="sequenceNumber" type="xs:integer">
-              <xs:annotation>
-                <xs:documentation>
-                The time the event was generated by the event source.
-                </xs:documentation>
-              </xs:annotation>
-            </xs:element>
-            <xs:element ref="notificationContent"/>
-        </xs:sequence>
-    </xs:complexType>
-
-
-
-Graf, et al.              Expires 8 August 2023                 [Page 6]
-
-Internet-Draft        YANG Notifications Sequencing        February 2023
-
-
-    <xs:element name="notification" type="NotificationType"/>
-  </xs:schema>
-
-4.  YANG Module for Event Notifications
-
-4.1.  YANG Tree Diagram
+3.1.  YANG Tree Diagram
 
    This YANG module updates ietf-notification with sysName and
    sequenceNumber leaf as described in Section 2 of this document.
@@ -355,7 +184,7 @@ Internet-Draft        YANG Notifications Sequencing        February 2023
        +-- sysName           inet:host
        +-- sequenceNumber    yang:counter32
 
-4.2.  YANG Module
+3.2.  YANG Module
 
    <CODE BEGINS> file "ietf-notification@2023-02-14.yang"
    module ietf-notification {
@@ -386,17 +215,17 @@ Internet-Draft        YANG Notifications Sequencing        February 2023
 
         Authors:  Thomas Graf
                   <mailto:thomas.graf@swisscom.com>
+                  Benoit Claise
+                  <mailto:benoit.claise@huawei.com>
+                  Pierre Francois
 
 
 
-Graf, et al.              Expires 8 August 2023                 [Page 7]
+Graf, et al.             Expires 22 August 2023                 [Page 4]
 
 Internet-Draft        YANG Notifications Sequencing        February 2023
 
 
-                  Benoit Claise
-                  <mailto:benoit.claise@huawei.com>
-                  Pierre Francois
                   <mailto:pierre.francois@insa-lyon.fr>
                   Alex Huang Feng
                   <mailto:alex.huang-feng@insa-lyon.fr>";
@@ -442,17 +271,17 @@ Internet-Draft        YANG Notifications Sequencing        February 2023
             Implementations must support time zones.";
        }
        leaf sysName {
+         type inet:host;
+         mandatory true;
+         description
 
 
 
-Graf, et al.              Expires 8 August 2023                 [Page 8]
+Graf, et al.             Expires 22 August 2023                 [Page 5]
 
 Internet-Draft        YANG Notifications Sequencing        February 2023
 
 
-         type inet:host;
-         mandatory true;
-         description
            "IP address or a DNS domain name from where the message was
             published from.";
        }
@@ -467,24 +296,24 @@ Internet-Draft        YANG Notifications Sequencing        February 2023
    }
    <CODE ENDS>
 
-5.  Security Considerations
+4.  Security Considerations
 
    The security considerations for the NETCONF Event notifications are
    described in [RFC5277].  This documents adds no additional security
    considerations.
 
-6.  IANA Considerations
+5.  IANA Considerations
 
    TBD: Ask IANA the yang module name.
 
-7.  Acknowledgements
+6.  Acknowledgements
 
    The authors would like to thank xxx for their review and valuable
    comments.
 
-8.  References
+7.  References
 
-8.1.  Normative References
+7.1.  Normative References
 
    [I-D.ahuang-netconf-notif-yang]
               Feng, A. H., Francois, P., Graf, T., and B. Claise, "YANG
@@ -498,17 +327,16 @@ Internet-Draft        YANG Notifications Sequencing        February 2023
               STD 17, RFC 1213, DOI 10.17487/RFC1213, March 1991,
               <https://www.rfc-editor.org/info/rfc1213>.
 
-
-
-
-Graf, et al.              Expires 8 August 2023                 [Page 9]
-
-Internet-Draft        YANG Notifications Sequencing        February 2023
-
-
    [RFC5277]  Chisholm, S. and H. Trevino, "NETCONF Event
               Notifications", RFC 5277, DOI 10.17487/RFC5277, July 2008,
               <https://www.rfc-editor.org/info/rfc5277>.
+
+
+
+Graf, et al.             Expires 22 August 2023                 [Page 6]
+
+Internet-Draft        YANG Notifications Sequencing        February 2023
+
 
    [RFC9187]  Touch, J., "Sequence Number Extension for Windowed
               Protocols", RFC 9187, DOI 10.17487/RFC9187, January 2022,
@@ -521,14 +349,7 @@ Internet-Draft        YANG Notifications Sequencing        February 2023
               xml-20081126, November 2008,
               <https://www.w3.org/TR/2008/REC-xml-20081126>.
 
-   [XMLSchema]
-              Thompson, H., Beech, D., Maloney, M., and N. Mendelsohn,
-              ""XML Schema Part 1: Structures Second Edition", W3C",
-              World Wide Web Consortium Recommendation REC-xmlschema-
-              1-20041028, October 2004, <http://www.w3.org/TR/2004/REC-
-              xmlschema-1-20041028/structures.html>.
-
-8.2.  Informative References
+7.2.  Informative References
 
    [RFC8640]  Voit, E., Clemm, A., Gonzalez Prieto, A., Nilsen-Nygaard,
               E., and A. Tripathy, "Dynamic Subscription to YANG Events
@@ -555,13 +376,6 @@ Authors' Addresses
    Email: jean.quilbeuf@huawei.com
 
 
-
-
-Graf, et al.              Expires 8 August 2023                [Page 10]
-
-Internet-Draft        YANG Notifications Sequencing        February 2023
-
-
    Alex Huang Feng
    INSA-Lyon
    Lyon
@@ -575,42 +389,4 @@ Internet-Draft        YANG Notifications Sequencing        February 2023
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-Graf, et al.              Expires 8 August 2023                [Page 11]
+Graf, et al.             Expires 22 August 2023                 [Page 7]
