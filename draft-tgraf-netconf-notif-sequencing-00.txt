@@ -5,10 +5,10 @@
 Network Working Group                                            T. Graf
 Internet-Draft                                                  Swisscom
 Intended status: Standards Track                             J. Quilbeuf
-Expires: 22 August 2023                                           Huawei
+Expires: 2 September 2023                                         Huawei
                                                            A. Huang Feng
                                                                INSA-Lyon
-                                                        18 February 2023
+                                                            1 March 2023
 
 
         Support of Hostname and Sequencing in YANG Notifications
@@ -37,7 +37,7 @@ Status of This Memo
    time.  It is inappropriate to use Internet-Drafts as reference
    material or to cite them other than as "work in progress."
 
-   This Internet-Draft will expire on 22 August 2023.
+   This Internet-Draft will expire on 2 September 2023.
 
 Copyright Notice
 
@@ -53,9 +53,9 @@ Copyright Notice
 
 
 
-Graf, et al.             Expires 22 August 2023                 [Page 1]
+Graf, et al.            Expires 2 September 2023                [Page 1]
 
-Internet-Draft        YANG Notifications Sequencing        February 2023
+Internet-Draft        YANG Notifications Sequencing           March 2023
 
 
    This document is subject to BCP 78 and the IETF Trust's Legal
@@ -73,14 +73,15 @@ Table of Contents
    2.  Extend the NETCONF Event Notification Header  . . . . . . . .   3
    3.  YANG Module for Event Notifications . . . . . . . . . . . . .   4
      3.1.  YANG Tree Diagram . . . . . . . . . . . . . . . . . . . .   4
-     3.2.  YANG Module . . . . . . . . . . . . . . . . . . . . . . .   4
+     3.2.  Full Tree View  . . . . . . . . . . . . . . . . . . . . .   4
+     3.3.  YANG Module . . . . . . . . . . . . . . . . . . . . . . .   5
    4.  Security Considerations . . . . . . . . . . . . . . . . . . .   6
-   5.  IANA Considerations . . . . . . . . . . . . . . . . . . . . .   6
-   6.  Acknowledgements  . . . . . . . . . . . . . . . . . . . . . .   6
-   7.  References  . . . . . . . . . . . . . . . . . . . . . . . . .   6
-     7.1.  Normative References  . . . . . . . . . . . . . . . . . .   6
+   5.  IANA Considerations . . . . . . . . . . . . . . . . . . . . .   7
+   6.  Acknowledgements  . . . . . . . . . . . . . . . . . . . . . .   7
+   7.  References  . . . . . . . . . . . . . . . . . . . . . . . . .   7
+     7.1.  Normative References  . . . . . . . . . . . . . . . . . .   7
      7.2.  Informative References  . . . . . . . . . . . . . . . . .   7
-   Authors' Addresses  . . . . . . . . . . . . . . . . . . . . . . .   7
+   Authors' Addresses  . . . . . . . . . . . . . . . . . . . . . . .   8
 
 1.  Introduction
 
@@ -108,10 +109,9 @@ Table of Contents
 
 
 
-
-Graf, et al.             Expires 22 August 2023                 [Page 2]
+Graf, et al.            Expires 2 September 2023                [Page 2]
 
-Internet-Draft        YANG Notifications Sequencing        February 2023
+Internet-Draft        YANG Notifications Sequencing           March 2023
 
 
    Today, network operators workaround this impediment by preserving the
@@ -143,55 +143,104 @@ Internet-Draft        YANG Notifications Sequencing        February 2023
    encoded XML [W3C.REC-xml-20081126] over the Network Configuration
    Protocol (NETCONF) as per [RFC8640].
 
-  <notification xmlns="urn:ietf:params:xml:ns:netconf:notification:1.0">
-   <eventTime>2023-02-04T16:30:11.22Z</eventTime>
-   <sysName>example-router</sysName>
-   <sequenceNumber>187653</sequenceNumber>
-   <push-update xmlns="urn:ietf:params:xml:ns:yang:ietf-yang-push">
-     <id>1011</id>
-     <datastore-contents>
-        <interfaces xmlns="urn:ietf:params:xml:ns:yang:ietf-interfaces">
-         <interface>
-           <name>eth0</name>
-           <oper-status>up</oper-status>
-         </interface>
-       </interfaces>
-     </datastore-contents>
-   </push-update>
-  </notification>
-
-          Figure 1: XML Push Example for a subscription-modified
-                           notification message
 
 
 
-Graf, et al.             Expires 22 August 2023                 [Page 3]
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Graf, et al.            Expires 2 September 2023                [Page 3]
 
-Internet-Draft        YANG Notifications Sequencing        February 2023
+Internet-Draft        YANG Notifications Sequencing           March 2023
 
+
+<notification xmlns="urn:ietf:params:xml:ns:netconf:notification:1.0">
+ <eventTime>2023-02-04T16:30:11.22Z</eventTime>
+ <sysName xmlns="urn:ietf:params:xml:ns:yang:ietf-notification-sequencing">
+  example-router
+ </sysName>
+ <sequenceNumber xmlns="urn:ietf:params:xml:ns:yang:ietf-notification-sequencing">
+  187653
+ </sequenceNumber>
+ <push-update xmlns="urn:ietf:params:xml:ns:yang:ietf-yang-push">
+   <id>1011</id>
+   <datastore-contents>
+      <interfaces xmlns="urn:ietf:params:xml:ns:yang:ietf-interfaces">
+       <interface>
+         <name>eth0</name>
+         <oper-status>up</oper-status>
+       </interface>
+     </interfaces>
+   </datastore-contents>
+ </push-update>
+</notification>
+
+        Figure 1: XML Push Example for a subscription-modified
+                         notification message
 
 3.  YANG Module for Event Notifications
 
 3.1.  YANG Tree Diagram
 
-   This YANG module updates ietf-notification with sysName and
-   sequenceNumber leaf as described in Section 2 of this document.
+   This YANG module augments the notification structure defined in
+   [I-D.ahuang-netconf-notif-yang] adding the sysName and the
+   sequenceNumber leaves as described in Section 2 of this document.
+
+   module: ietf-notification-sequencing
+
+     augment-structure /inotif:notification:
+       +-- sysName           inet:host
+       +-- sequenceNumber    yang:counter32
+
+3.2.  Full Tree View
+
+   The following is the YANG tree diagram [RFC8340] for the ietf-
+   notification-sequencing augmentation within the ietf-notification.
+
+
+
+
+
+
+
+
+
+Graf, et al.            Expires 2 September 2023                [Page 4]
+
+Internet-Draft        YANG Notifications Sequencing           March 2023
+
 
    module: ietf-notification
 
      structure notification:
-       +-- eventTime         yang:date-and-time
-       +-- sysName           inet:host
-       +-- sequenceNumber    yang:counter32
+       +-- eventTime                   yang:date-and-time
+       +-- inotifseq:sysName           inet:host
+       +-- inotifseq:sequenceNumber    yang:counter32
 
-3.2.  YANG Module
+3.3.  YANG Module
 
-   <CODE BEGINS> file "ietf-notification@2023-02-14.yang"
-   module ietf-notification {
+   <CODE BEGINS> file "ietf-notification-sequencing@2023-03-01.yang"
+   module ietf-notification-sequencing {
      yang-version 1.1;
      namespace
-       "urn:ietf:params:xml:ns:yang:ietf-notification";
-     prefix inn;
+       "urn:ietf:params:xml:ns:yang:ietf-notification-sequencing";
+     prefix inotifseq;
      import ietf-inet-types {
        prefix inet;
        reference
@@ -201,6 +250,11 @@ Internet-Draft        YANG Notifications Sequencing        February 2023
        prefix yang;
        reference
          "RFC 6991: Common YANG Data Types";
+     }
+     import ietf-notification {
+       prefix inotif;
+       reference
+         "draft-ahuang-netconf-notif-yang: NETCONF Event Notification YANG";
      }
      import ietf-yang-structure-ext {
        prefix sx;
@@ -215,23 +269,22 @@ Internet-Draft        YANG Notifications Sequencing        February 2023
 
         Authors:  Thomas Graf
                   <mailto:thomas.graf@swisscom.com>
-                  Benoit Claise
-                  <mailto:benoit.claise@huawei.com>
-                  Pierre Francois
-
-
-
-Graf, et al.             Expires 22 August 2023                 [Page 4]
-
-Internet-Draft        YANG Notifications Sequencing        February 2023
-
-
-                  <mailto:pierre.francois@insa-lyon.fr>
+                  Jean Quilbeuf
+                  <mailto:jean.quilbeuf@huawei.com>
                   Alex Huang Feng
                   <mailto:alex.huang-feng@insa-lyon.fr>";
 
+
+
+
+Graf, et al.            Expires 2 September 2023                [Page 5]
+
+Internet-Draft        YANG Notifications Sequencing           March 2023
+
+
      description
-       "Defines NETCONF Event Notification structure.
+       "Defines NETCONF Event Notification structure with the sysName and
+       the sequenceNumber.
 
        Copyright (c) 2023 IETF Trust and the persons identified as
        authors of the code.  All rights reserved.
@@ -245,43 +298,18 @@ Internet-Draft        YANG Notifications Sequencing        February 2023
        This version of this YANG module is part of RFC XXXX; see the RFC
        itself for full legal notices.";
 
-     revision 2023-02-14 {
+     revision 2023-03-01 {
        description
-         "Adds the sysName leaf and sequenceNumber leaf to the NETCONF
-         event notification structure";
+         "First revision";
        reference
          "RFC XXXX: YANG Notifications Sequencing";
      }
 
-     revision 2023-01-16 {
-       description
-         "First revision.
-         TBD: to be updated and synced with draft-ahuang-netconf-notif-yang.";
-       reference
-         "RFC YYYY: NETCONF Event Notification YANG";
-     }
-
-     sx:structure notification {
-       leaf eventTime {
-         type yang:date-and-time;
-         mandatory true;
-         description
-           "The time the event was generated by the event source.  This
-            parameter is of type dateTime and compliant to [RFC3339].
-            Implementations must support time zones.";
-       }
+     sx:augment-structure "/inotif:notification" {
        leaf sysName {
          type inet:host;
          mandatory true;
          description
-
-
-
-Graf, et al.             Expires 22 August 2023                 [Page 5]
-
-Internet-Draft        YANG Notifications Sequencing        February 2023
-
-
            "IP address or a DNS domain name from where the message was
             published from.";
        }
@@ -301,6 +329,14 @@ Internet-Draft        YANG Notifications Sequencing        February 2023
    The security considerations for the NETCONF Event notifications are
    described in [RFC5277].  This documents adds no additional security
    considerations.
+
+
+
+
+Graf, et al.            Expires 2 September 2023                [Page 6]
+
+Internet-Draft        YANG Notifications Sequencing           March 2023
+
 
 5.  IANA Considerations
 
@@ -331,12 +367,9 @@ Internet-Draft        YANG Notifications Sequencing        February 2023
               Notifications", RFC 5277, DOI 10.17487/RFC5277, July 2008,
               <https://www.rfc-editor.org/info/rfc5277>.
 
-
-
-Graf, et al.             Expires 22 August 2023                 [Page 6]
-
-Internet-Draft        YANG Notifications Sequencing        February 2023
-
+   [RFC8340]  Bjorklund, M. and L. Berger, Ed., "YANG Tree Diagrams",
+              BCP 215, RFC 8340, DOI 10.17487/RFC8340, March 2018,
+              <https://www.rfc-editor.org/info/rfc8340>.
 
    [RFC9187]  Touch, J., "Sequence Number Extension for Windowed
               Protocols", RFC 9187, DOI 10.17487/RFC9187, January 2022,
@@ -350,6 +383,16 @@ Internet-Draft        YANG Notifications Sequencing        February 2023
               <https://www.w3.org/TR/2008/REC-xml-20081126>.
 
 7.2.  Informative References
+
+
+
+
+
+
+Graf, et al.            Expires 2 September 2023                [Page 7]
+
+Internet-Draft        YANG Notifications Sequencing           March 2023
+
 
    [RFC8640]  Voit, E., Clemm, A., Gonzalez Prieto, A., Nilsen-Nygaard,
               E., and A. Tripathy, "Dynamic Subscription to YANG Events
@@ -389,4 +432,17 @@ Authors' Addresses
 
 
 
-Graf, et al.             Expires 22 August 2023                 [Page 7]
+
+
+
+
+
+
+
+
+
+
+
+
+
+Graf, et al.            Expires 2 September 2023                [Page 8]
