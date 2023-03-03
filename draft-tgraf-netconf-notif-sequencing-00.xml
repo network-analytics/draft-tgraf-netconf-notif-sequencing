@@ -110,8 +110,9 @@
       <t>
       On top of that, the transport source IP address might not represent  
       the management IP address by which the YANG push server should be known.
-      In other terms, the source-host [RFC6470], which is the "Address of the 
-      remote host for the session" might not be the management IP address.
+      In other terms, the source-host <xref target="RFC6470"/>, which is the
+      "Address of the remote host for the session" might not be the management
+      IP address.
       </t>
 
       <t>By extending the NETCONF Event Notification header with sysName,
