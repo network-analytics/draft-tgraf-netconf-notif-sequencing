@@ -361,8 +361,9 @@ Internet-Draft        YANG Notifications Sequencing           March 2023
 
 6.  Acknowledgements
 
-   The authors would like to thank xxx for their review and valuable
-   comments.
+   The authors would like to thank Rob Wilton, Nick Corran, Pierre
+   Francois, Benoit Claise, Ahmed Elhassany and Ignacio Dominguez
+   Martinez-Casanueva for their review and valuable comments.
 
 7.  References
 
@@ -383,7 +384,6 @@ Internet-Draft        YANG Notifications Sequencing           March 2023
    [RFC3688]  Mealling, M., "The IETF XML Registry", BCP 81, RFC 3688,
               DOI 10.17487/RFC3688, January 2004,
               <https://www.rfc-editor.org/info/rfc3688>.
-
 
 
 

@@ -328,8 +328,9 @@ module ietf-notification-sequencing {
     </section>
 
     <section anchor="Acknowledgements" title="Acknowledgements">
-      <t>The authors would like to thank xxx for their review and valuable
-      comments.</t>
+      <t>The authors would like to thank Rob Wilton, Nick Corran, Pierre
+      Francois, Benoit Claise, Ahmed Elhassany and Ignacio Dominguez
+      Martinez-Casanueva for their review and valuable comments.</t>
     </section>
   </middle>
 
