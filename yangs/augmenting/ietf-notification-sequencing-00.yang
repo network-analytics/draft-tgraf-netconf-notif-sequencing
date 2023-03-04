@@ -64,8 +64,8 @@ module ietf-notification-sequencing {
       type inet:host;
       mandatory true;
       description
-        "IP address or a DNS domain name from where the message was
-         published from.";
+        "IP address or a DNS domain name from the server from which
+        the message was published.";
     }
     leaf sequenceNumber {
       type yang:counter32;
