@@ -5,10 +5,10 @@
 Network Working Group                                            T. Graf
 Internet-Draft                                                  Swisscom
 Intended status: Standards Track                             J. Quilbeuf
-Expires: 4 September 2023                                         Huawei
+Expires: 5 September 2023                                         Huawei
                                                            A. Huang Feng
                                                                INSA-Lyon
-                                                            3 March 2023
+                                                            4 March 2023
 
 
         Support of Hostname and Sequencing in YANG Notifications
@@ -37,7 +37,7 @@ Status of This Memo
    time.  It is inappropriate to use Internet-Drafts as reference
    material or to cite them other than as "work in progress."
 
-   This Internet-Draft will expire on 4 September 2023.
+   This Internet-Draft will expire on 5 September 2023.
 
 Copyright Notice
 
@@ -53,7 +53,7 @@ Copyright Notice
 
 
 
-Graf, et al.            Expires 4 September 2023                [Page 1]
+Graf, et al.            Expires 5 September 2023                [Page 1]
 
 Internet-Draft        YANG Notifications Sequencing           March 2023
 
@@ -109,7 +109,7 @@ Table of Contents
 
 
 
-Graf, et al.            Expires 4 September 2023                [Page 2]
+Graf, et al.            Expires 5 September 2023                [Page 2]
 
 Internet-Draft        YANG Notifications Sequencing           March 2023
 
@@ -165,7 +165,7 @@ Internet-Draft        YANG Notifications Sequencing           March 2023
 
 
 
-Graf, et al.            Expires 4 September 2023                [Page 3]
+Graf, et al.            Expires 5 September 2023                [Page 3]
 
 Internet-Draft        YANG Notifications Sequencing           March 2023
 
@@ -221,7 +221,7 @@ Internet-Draft        YANG Notifications Sequencing           March 2023
 
 
 
-Graf, et al.            Expires 4 September 2023                [Page 4]
+Graf, et al.            Expires 5 September 2023                [Page 4]
 
 Internet-Draft        YANG Notifications Sequencing           March 2023
 
@@ -277,7 +277,7 @@ Internet-Draft        YANG Notifications Sequencing           March 2023
 
 
 
-Graf, et al.            Expires 4 September 2023                [Page 5]
+Graf, et al.            Expires 5 September 2023                [Page 5]
 
 Internet-Draft        YANG Notifications Sequencing           March 2023
 
@@ -333,7 +333,7 @@ Internet-Draft        YANG Notifications Sequencing           March 2023
 
 
 
-Graf, et al.            Expires 4 September 2023                [Page 6]
+Graf, et al.            Expires 5 September 2023                [Page 6]
 
 Internet-Draft        YANG Notifications Sequencing           March 2023
 
@@ -371,9 +371,9 @@ Internet-Draft        YANG Notifications Sequencing           March 2023
    [I-D.ahuang-netconf-notif-yang]
               Feng, A. H., Francois, P., Graf, T., and B. Claise, "YANG
               model for NETCONF Event Notifications", Work in Progress,
-              Internet-Draft, draft-ahuang-netconf-notif-yang-00, 25
-              January 2023, <https://datatracker.ietf.org/doc/html/
-              draft-ahuang-netconf-notif-yang-00>.
+              Internet-Draft, draft-ahuang-netconf-notif-yang-01, 3
+              March 2023, <https://datatracker.ietf.org/doc/html/draft-
+              ahuang-netconf-notif-yang-01>.
 
    [RFC1213]  McCloghrie, K. and M. Rose, "Management Information Base
               for Network Management of TCP/IP-based internets: MIB-II",
@@ -389,7 +389,7 @@ Internet-Draft        YANG Notifications Sequencing           March 2023
 
 
 
-Graf, et al.            Expires 4 September 2023                [Page 7]
+Graf, et al.            Expires 5 September 2023                [Page 7]
 
 Internet-Draft        YANG Notifications Sequencing           March 2023
 
@@ -445,7 +445,7 @@ Authors' Addresses
 
 
 
-Graf, et al.            Expires 4 September 2023                [Page 8]
+Graf, et al.            Expires 5 September 2023                [Page 8]
 
 Internet-Draft        YANG Notifications Sequencing           March 2023
 
@@ -501,4 +501,4 @@ Internet-Draft        YANG Notifications Sequencing           March 2023
 
 
 
-Graf, et al.            Expires 4 September 2023                [Page 9]
+Graf, et al.            Expires 5 September 2023                [Page 9]
