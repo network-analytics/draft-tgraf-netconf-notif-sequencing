@@ -68,7 +68,7 @@
       </address>
     </author>
 
-    <date day="4" month="March" year="2023"/>
+    <date day="5" month="March" year="2023"/>
 
     <abstract>
       <t>This document specifies a new YANG module that augment the NETCONF
@@ -117,6 +117,14 @@
       only able to identify from which network node, subscription, and time
       the message was published but also, the order of the published
       messages.</t>
+
+      <t>To correlate network data among different Network Telemetry planes as
+      described in Section 3.1 of <xref target="RFC9232"/> or among different
+      YANG push subscription types defined in Section 3.1 of <xref
+      target="RFC8641"/>, sysName describes from which network node the state
+      change was observed or from when to when the data was accounted. This is
+      essential for understanding the timely relationship among these
+      different planes and YANG push subscription types.</t>
     </section>
 
     <section anchor="Streaming-Update"
@@ -327,6 +335,16 @@ module ietf-notification-sequencing {
       </section>
     </section>
 
+    <section anchor="Operational" title="Operational Considerations">
+      <section anchor="operational_sysname_correlation"
+               title="SysName Correlation">
+        <t>In order to allow data corelationamong BGP Monitoring Protocol
+        (BMP) <xref target="RFC7854"/> and YANG push, the same hostname value
+        should be used as described in section 4.4 of <xref target="RFC7854"/>
+        for the information TLV in the init BMP message type.</t>
+      </section>
+    </section>
+
     <section anchor="Acknowledgements" title="Acknowledgements">
       <t>The authors would like to thank Rob Wilton, Nick Corran, Pierre
       Francois, Benoit Claise, Ahmed Elhassany and Ignacio Dominguez
@@ -388,9 +406,13 @@ module ietf-notification-sequencing {
     <references title="Informative References">
       <?rfc include='http://xml.resource.org/public/rfc/bibxml/reference.RFC.6470.xml'?>
 
+      <?rfc include='http://xml.resource.org/public/rfc/bibxml/reference.RFC.7854.xml'?>
+
       <?rfc include='http://xml.resource.org/public/rfc/bibxml/reference.RFC.8640.xml'?>
 
       <?rfc include='http://xml.resource.org/public/rfc/bibxml/reference.RFC.8641.xml'?>
+
+      <?rfc include='http://xml.resource.org/public/rfc/bibxml/reference.RFC.9232.xml'?>
     </references>
   </back>
 </rfc>

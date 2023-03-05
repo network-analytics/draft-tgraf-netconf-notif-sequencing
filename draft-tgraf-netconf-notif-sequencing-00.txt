@@ -5,10 +5,10 @@
 Network Working Group                                            T. Graf
 Internet-Draft                                                  Swisscom
 Intended status: Standards Track                             J. Quilbeuf
-Expires: 5 September 2023                                         Huawei
+Expires: 6 September 2023                                         Huawei
                                                            A. Huang Feng
                                                                INSA-Lyon
-                                                            4 March 2023
+                                                            5 March 2023
 
 
         Support of Hostname and Sequencing in YANG Notifications
@@ -37,7 +37,7 @@ Status of This Memo
    time.  It is inappropriate to use Internet-Drafts as reference
    material or to cite them other than as "work in progress."
 
-   This Internet-Draft will expire on 5 September 2023.
+   This Internet-Draft will expire on 6 September 2023.
 
 Copyright Notice
 
@@ -53,7 +53,7 @@ Copyright Notice
 
 
 
-Graf, et al.            Expires 5 September 2023                [Page 1]
+Graf, et al.            Expires 6 September 2023                [Page 1]
 
 Internet-Draft        YANG Notifications Sequencing           March 2023
 
@@ -79,11 +79,13 @@ Table of Contents
    5.  IANA Considerations . . . . . . . . . . . . . . . . . . . . .   7
      5.1.  IETF XML Registry . . . . . . . . . . . . . . . . . . . .   7
      5.2.  YANG Module Name  . . . . . . . . . . . . . . . . . . . .   7
-   6.  Acknowledgements  . . . . . . . . . . . . . . . . . . . . . .   7
-   7.  References  . . . . . . . . . . . . . . . . . . . . . . . . .   7
-     7.1.  Normative References  . . . . . . . . . . . . . . . . . .   7
-     7.2.  Informative References  . . . . . . . . . . . . . . . . .   8
-   Authors' Addresses  . . . . . . . . . . . . . . . . . . . . . . .   8
+   6.  Operational Considerations  . . . . . . . . . . . . . . . . .   7
+     6.1.  SysName Correlation . . . . . . . . . . . . . . . . . . .   7
+   7.  Acknowledgements  . . . . . . . . . . . . . . . . . . . . . .   7
+   8.  References  . . . . . . . . . . . . . . . . . . . . . . . . .   7
+     8.1.  Normative References  . . . . . . . . . . . . . . . . . .   7
+     8.2.  Informative References  . . . . . . . . . . . . . . . . .   8
+   Authors' Addresses  . . . . . . . . . . . . . . . . . . . . . . .   9
 
 1.  Introduction
 
@@ -107,9 +109,7 @@ Table of Contents
 
 
 
-
-
-Graf, et al.            Expires 5 September 2023                [Page 2]
+Graf, et al.            Expires 6 September 2023                [Page 2]
 
 Internet-Draft        YANG Notifications Sequencing           March 2023
 
@@ -131,6 +131,14 @@ Internet-Draft        YANG Notifications Sequencing           March 2023
    number as described in [RFC9187], the downstream system is not only
    able to identify from which network node, subscription, and time the
    message was published but also, the order of the published messages.
+
+   To correlate network data among different Network Telemetry planes as
+   described in Section 3.1 of [RFC9232] or among different YANG push
+   subscription types defined in Section 3.1 of [RFC8641], sysName
+   describes from which network node the state change was observed or
+   from when to when the data was accounted.  This is essential for
+   understanding the timely relationship among these different planes
+   and YANG push subscription types.
 
 2.  Extend the NETCONF Event Notification Header
 
@@ -157,15 +165,7 @@ Internet-Draft        YANG Notifications Sequencing           March 2023
 
 
 
-
-
-
-
-
-
-
-
-Graf, et al.            Expires 5 September 2023                [Page 3]
+Graf, et al.            Expires 6 September 2023                [Page 3]
 
 Internet-Draft        YANG Notifications Sequencing           March 2023
 
@@ -221,7 +221,7 @@ Internet-Draft        YANG Notifications Sequencing           March 2023
 
 
 
-Graf, et al.            Expires 5 September 2023                [Page 4]
+Graf, et al.            Expires 6 September 2023                [Page 4]
 
 Internet-Draft        YANG Notifications Sequencing           March 2023
 
@@ -277,7 +277,7 @@ Internet-Draft        YANG Notifications Sequencing           March 2023
 
 
 
-Graf, et al.            Expires 5 September 2023                [Page 5]
+Graf, et al.            Expires 6 September 2023                [Page 5]
 
 Internet-Draft        YANG Notifications Sequencing           March 2023
 
@@ -333,7 +333,7 @@ Internet-Draft        YANG Notifications Sequencing           March 2023
 
 
 
-Graf, et al.            Expires 5 September 2023                [Page 6]
+Graf, et al.            Expires 6 September 2023                [Page 6]
 
 Internet-Draft        YANG Notifications Sequencing           March 2023
 
@@ -359,15 +359,24 @@ Internet-Draft        YANG Notifications Sequencing           March 2023
      prefix: inotifseq
      reference: RFC XXXX
 
-6.  Acknowledgements
+6.  Operational Considerations
+
+6.1.  SysName Correlation
+
+   In order to allow data corelationamong BGP Monitoring Protocol (BMP)
+   [RFC7854] and YANG push, the same hostname value should be used as
+   described in section 4.4 of [RFC7854] for the information TLV in the
+   init BMP message type.
+
+7.  Acknowledgements
 
    The authors would like to thank Rob Wilton, Nick Corran, Pierre
    Francois, Benoit Claise, Ahmed Elhassany and Ignacio Dominguez
    Martinez-Casanueva for their review and valuable comments.
 
-7.  References
+8.  References
 
-7.1.  Normative References
+8.1.  Normative References
 
    [I-D.ahuang-netconf-notif-yang]
               Feng, A. H., Francois, P., Graf, T., and B. Claise, "YANG
@@ -375,6 +384,15 @@ Internet-Draft        YANG Notifications Sequencing           March 2023
               Internet-Draft, draft-ahuang-netconf-notif-yang-01, 3
               March 2023, <https://datatracker.ietf.org/doc/html/draft-
               ahuang-netconf-notif-yang-01>.
+
+
+
+
+
+Graf, et al.            Expires 6 September 2023                [Page 7]
+
+Internet-Draft        YANG Notifications Sequencing           March 2023
+
 
    [RFC1213]  McCloghrie, K. and M. Rose, "Management Information Base
               for Network Management of TCP/IP-based internets: MIB-II",
@@ -384,15 +402,6 @@ Internet-Draft        YANG Notifications Sequencing           March 2023
    [RFC3688]  Mealling, M., "The IETF XML Registry", BCP 81, RFC 3688,
               DOI 10.17487/RFC3688, January 2004,
               <https://www.rfc-editor.org/info/rfc3688>.
-
-
-
-
-
-Graf, et al.            Expires 5 September 2023                [Page 7]
-
-Internet-Draft        YANG Notifications Sequencing           March 2023
-
 
    [RFC5277]  Chisholm, S. and H. Trevino, "NETCONF Event
               Notifications", RFC 5277, DOI 10.17487/RFC5277, July 2008,
@@ -418,11 +427,28 @@ Internet-Draft        YANG Notifications Sequencing           March 2023
               xml-20081126, November 2008,
               <https://www.w3.org/TR/2008/REC-xml-20081126>.
 
-7.2.  Informative References
+8.2.  Informative References
 
    [RFC6470]  Bierman, A., "Network Configuration Protocol (NETCONF)
               Base Notifications", RFC 6470, DOI 10.17487/RFC6470,
               February 2012, <https://www.rfc-editor.org/info/rfc6470>.
+
+   [RFC7854]  Scudder, J., Ed., Fernando, R., and S. Stuart, "BGP
+              Monitoring Protocol (BMP)", RFC 7854,
+              DOI 10.17487/RFC7854, June 2016,
+              <https://www.rfc-editor.org/info/rfc7854>.
+
+
+
+
+
+
+
+
+Graf, et al.            Expires 6 September 2023                [Page 8]
+
+Internet-Draft        YANG Notifications Sequencing           March 2023
+
 
    [RFC8640]  Voit, E., Clemm, A., Gonzalez Prieto, A., Nilsen-Nygaard,
               E., and A. Tripathy, "Dynamic Subscription to YANG Events
@@ -434,6 +460,11 @@ Internet-Draft        YANG Notifications Sequencing           March 2023
               for Datastore Updates", RFC 8641, DOI 10.17487/RFC8641,
               September 2019, <https://www.rfc-editor.org/info/rfc8641>.
 
+   [RFC9232]  Song, H., Qin, F., Martinez-Julia, P., Ciavaglia, L., and
+              A. Wang, "Network Telemetry Framework", RFC 9232,
+              DOI 10.17487/RFC9232, May 2022,
+              <https://www.rfc-editor.org/info/rfc9232>.
+
 Authors' Addresses
 
    Thomas Graf
@@ -442,12 +473,6 @@ Authors' Addresses
    CH-8045 Zurich
    Switzerland
    Email: thomas.graf@swisscom.com
-
-
-
-Graf, et al.            Expires 5 September 2023                [Page 8]
-
-Internet-Draft        YANG Notifications Sequencing           March 2023
 
 
    Jean Quilbeuf
@@ -476,29 +501,4 @@ Internet-Draft        YANG Notifications Sequencing           March 2023
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-Graf, et al.            Expires 5 September 2023                [Page 9]
+Graf, et al.            Expires 6 September 2023                [Page 9]
