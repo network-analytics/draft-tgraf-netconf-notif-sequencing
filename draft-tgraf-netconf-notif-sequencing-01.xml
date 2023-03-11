@@ -10,7 +10,7 @@
 <?rfc inline="yes"?>
 <?rfc compact="yes"?>
 <?rfc subcompact="no"?>
-<rfc category="std" docName="draft-tgraf-netconf-notif-sequencing-00"
+<rfc category="std" docName="draft-tgraf-netconf-notif-sequencing-01"
      ipr="trust200902">
   <front>
     <title abbrev="YANG Notifications Sequencing">Support of Hostname and
@@ -68,24 +68,25 @@
       </address>
     </author>
 
-    <date day="5" month="March" year="2023"/>
+    <date day="11" month="March" year="2023"/>
 
     <abstract>
       <t>This document specifies a new YANG module that augment the NETCONF
       Event Notification header to support hostname and sequence numbers to
       identify from which network node and at which time the message was
-      published. This allows to recognize loss, delay and reordering between
-      the publisher and the downstream system storing the message.</t>
+      published. This allows the collector to recognize loss, delay and
+      reordering between the publisher and the downstream system storing the
+      message.</t>
     </abstract>
   </front>
 
   <middle>
     <section anchor="Introduction" title="Introduction">
-      <t><xref target="RFC5277"/> describes the NETCONF event notification
-      header using a XML Schema. In the metadata of the event notification
-      header, only the eventTime is present indicating at which time the
-      notification message was published. For other encodings, the same schema
-      is implemented using a YANG module in <xref
+      <t>Section 4 of <xref target="RFC5277"/> describes the NETCONF event
+      notification header using a XML Schema. In the metadata of the event
+      notification header, only the eventTime is present indicating at which
+      time the notification message was published. For other encodings, the
+      same schema is implemented using a YANG module in <xref
       target="I-D.ahuang-netconf-notif-yang"/>. Furthermore, in Section 3.7 of
       <xref target="RFC8641"/>, the subscription ID is added to the
       "push-update" and "push-change-update" notification messages allowing to
@@ -136,8 +137,9 @@
       <dl>
         <dt>sysName:</dt>
 
-        <dd>Describes the hostname as specified in <xref target="RFC1213"/>
-        from where the message was published from.</dd>
+        <dd>Describes the hostname following the 'sysName' object definition
+        in <xref target="RFC1213"/> from where the message was published
+        from.</dd>
       </dl>
 
       <dl>
@@ -338,7 +340,7 @@ module ietf-notification-sequencing {
     <section anchor="Operational" title="Operational Considerations">
       <section anchor="operational_sysname_correlation"
                title="SysName Correlation">
-        <t>In order to allow data corelationamong BGP Monitoring Protocol
+        <t>In order to allow data correlation among BGP Monitoring Protocol
         (BMP) <xref target="RFC7854"/> and YANG push, the same hostname value
         should be used as described in section 4.4 of <xref target="RFC7854"/>
         for the information TLV in the init BMP message type.</t>

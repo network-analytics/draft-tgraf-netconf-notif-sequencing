@@ -5,22 +5,23 @@
 Network Working Group                                            T. Graf
 Internet-Draft                                                  Swisscom
 Intended status: Standards Track                             J. Quilbeuf
-Expires: 6 September 2023                                         Huawei
+Expires: 12 September 2023                                        Huawei
                                                            A. Huang Feng
                                                                INSA-Lyon
-                                                            5 March 2023
+                                                           11 March 2023
 
 
         Support of Hostname and Sequencing in YANG Notifications
-                draft-tgraf-netconf-notif-sequencing-00
+                draft-tgraf-netconf-notif-sequencing-01
 
 Abstract
 
    This document specifies a new YANG module that augment the NETCONF
    Event Notification header to support hostname and sequence numbers to
    identify from which network node and at which time the message was
-   published.  This allows to recognize loss, delay and reordering
-   between the publisher and the downstream system storing the message.
+   published.  This allows the collector to recognize loss, delay and
+   reordering between the publisher and the downstream system storing
+   the message.
 
 Status of This Memo
 
@@ -37,32 +38,26 @@ Status of This Memo
    time.  It is inappropriate to use Internet-Drafts as reference
    material or to cite them other than as "work in progress."
 
-   This Internet-Draft will expire on 6 September 2023.
+   This Internet-Draft will expire on 12 September 2023.
 
 Copyright Notice
 
    Copyright (c) 2023 IETF Trust and the persons identified as the
    document authors.  All rights reserved.
 
-
-
-
-
-
-
-
-
-
-Graf, et al.            Expires 6 September 2023                [Page 1]
-
-Internet-Draft        YANG Notifications Sequencing           March 2023
-
-
    This document is subject to BCP 78 and the IETF Trust's Legal
    Provisions Relating to IETF Documents (https://trustee.ietf.org/
    license-info) in effect on the date of publication of this document.
    Please review these documents carefully, as they describe your rights
    and restrictions with respect to this document.  Code Components
+
+
+
+Graf, et al.            Expires 12 September 2023               [Page 1]
+
+Internet-Draft        YANG Notifications Sequencing           March 2023
+
+
    extracted from this document must include Revised BSD License text as
    described in Section 4.e of the Trust Legal Provisions and are
    provided without warranty as described in the Revised BSD License.
@@ -89,15 +84,15 @@ Table of Contents
 
 1.  Introduction
 
-   [RFC5277] describes the NETCONF event notification header using a XML
-   Schema.  In the metadata of the event notification header, only the
-   eventTime is present indicating at which time the notification
-   message was published.  For other encodings, the same schema is
-   implemented using a YANG module in [I-D.ahuang-netconf-notif-yang].
-   Furthermore, in Section 3.7 of [RFC8641], the subscription ID is
-   added to the "push-update" and "push-change-update" notification
-   messages allowing to recognize to which xpath or sub-tree the node
-   was subscribed to.
+   Section 4 of [RFC5277] describes the NETCONF event notification
+   header using a XML Schema.  In the metadata of the event notification
+   header, only the eventTime is present indicating at which time the
+   notification message was published.  For other encodings, the same
+   schema is implemented using a YANG module in
+   [I-D.ahuang-netconf-notif-yang].  Furthermore, in Section 3.7 of
+   [RFC8641], the subscription ID is added to the "push-update" and
+   "push-change-update" notification messages allowing to recognize to
+   which xpath or sub-tree the node was subscribed to.
 
    When the NETCONF event notification message is forwarded from the
    receiver to another system, such as a messaging system or a time
@@ -109,7 +104,12 @@ Table of Contents
 
 
 
-Graf, et al.            Expires 6 September 2023                [Page 2]
+
+
+
+
+
+Graf, et al.            Expires 12 September 2023               [Page 2]
 
 Internet-Draft        YANG Notifications Sequencing           March 2023
 
@@ -146,8 +146,8 @@ Internet-Draft        YANG Notifications Sequencing           March 2023
    following metadata objects are part of a "push-update" and "push-
    change-update" notification message.
 
-   sysName:  Describes the hostname as specified in [RFC1213] from where
-      the message was published from.
+   sysName:  Describes the hostname following the 'sysName' object
+      definition in [RFC1213] from where the message was published from.
 
    sequenceNumber:  Generates a unique sequence number as described in
       [RFC9187] for each published message.
@@ -165,7 +165,7 @@ Internet-Draft        YANG Notifications Sequencing           March 2023
 
 
 
-Graf, et al.            Expires 6 September 2023                [Page 3]
+Graf, et al.            Expires 12 September 2023               [Page 3]
 
 Internet-Draft        YANG Notifications Sequencing           March 2023
 
@@ -221,7 +221,7 @@ Internet-Draft        YANG Notifications Sequencing           March 2023
 
 
 
-Graf, et al.            Expires 6 September 2023                [Page 4]
+Graf, et al.            Expires 12 September 2023               [Page 4]
 
 Internet-Draft        YANG Notifications Sequencing           March 2023
 
@@ -277,7 +277,7 @@ Internet-Draft        YANG Notifications Sequencing           March 2023
 
 
 
-Graf, et al.            Expires 6 September 2023                [Page 5]
+Graf, et al.            Expires 12 September 2023               [Page 5]
 
 Internet-Draft        YANG Notifications Sequencing           March 2023
 
@@ -333,7 +333,7 @@ Internet-Draft        YANG Notifications Sequencing           March 2023
 
 
 
-Graf, et al.            Expires 6 September 2023                [Page 6]
+Graf, et al.            Expires 12 September 2023               [Page 6]
 
 Internet-Draft        YANG Notifications Sequencing           March 2023
 
@@ -363,10 +363,10 @@ Internet-Draft        YANG Notifications Sequencing           March 2023
 
 6.1.  SysName Correlation
 
-   In order to allow data corelationamong BGP Monitoring Protocol (BMP)
-   [RFC7854] and YANG push, the same hostname value should be used as
-   described in section 4.4 of [RFC7854] for the information TLV in the
-   init BMP message type.
+   In order to allow data correlation among BGP Monitoring Protocol
+   (BMP) [RFC7854] and YANG push, the same hostname value should be used
+   as described in section 4.4 of [RFC7854] for the information TLV in
+   the init BMP message type.
 
 7.  Acknowledgements
 
@@ -389,7 +389,7 @@ Internet-Draft        YANG Notifications Sequencing           March 2023
 
 
 
-Graf, et al.            Expires 6 September 2023                [Page 7]
+Graf, et al.            Expires 12 September 2023               [Page 7]
 
 Internet-Draft        YANG Notifications Sequencing           March 2023
 
@@ -445,7 +445,7 @@ Internet-Draft        YANG Notifications Sequencing           March 2023
 
 
 
-Graf, et al.            Expires 6 September 2023                [Page 8]
+Graf, et al.            Expires 12 September 2023               [Page 8]
 
 Internet-Draft        YANG Notifications Sequencing           March 2023
 
@@ -501,4 +501,4 @@ Authors' Addresses
 
 
 
-Graf, et al.            Expires 6 September 2023                [Page 9]
+Graf, et al.            Expires 12 September 2023               [Page 9]
