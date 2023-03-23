@@ -68,7 +68,7 @@
       </address>
     </author>
 
-    <date day="19" month="March" year="2023"/>
+    <date day="23" month="March" year="2023"/>
 
     <abstract>
       <t>This document specifies a new YANG module that augment the NETCONF
@@ -207,8 +207,8 @@ module: ietf-notification-sequencing
 
   augment-structure /inotif:notification:
     +-- sysName           inet:host
-    +-- publisherId       yang:gauge32
     +-- sequenceNumber    yang:counter32
+    +-- publisherId       uint32
 ]]></artwork>
           </figure></t>
       </section>
@@ -225,8 +225,8 @@ module: ietf-notification
   structure notification:
     +-- eventTime                   yang:date-and-time
     +-- inotifseq:sysName           inet:host
-    +-- inotifseq:publisherId       yang:gauge32
     +-- inotifseq:sequenceNumber    yang:counter32
+    +-- inotifseq:publisherId       uint32
 ]]></artwork>
           </figure></t>
       </section>
@@ -234,7 +234,7 @@ module: ietf-notification
       <section anchor="yang-module" title="YANG Module">
         <t><figure>
             <artwork align="left"><![CDATA[
-<CODE BEGINS> file "ietf-notification-sequencing@2023-03-01.yang"
+<CODE BEGINS> file "ietf-notification-sequencing@2023-03-23.yang"
 module ietf-notification-sequencing {
   yang-version 1.1;
   namespace
@@ -289,7 +289,7 @@ module ietf-notification-sequencing {
     This version of this YANG module is part of RFC XXXX; see the RFC
     itself for full legal notices.";
 
-  revision 2023-03-01 {
+  revision 2023-03-23 {
     description
       "First revision";
     reference
@@ -304,19 +304,18 @@ module ietf-notification-sequencing {
         "IP address or a DNS domain name from the server from which
         the message was published.";
     }
-    leaf publisherId {
-      type yang:gauge32;
-      mandatory true;
-      description
-        "Unique publisher ID from the server from which the message
-        was published.";
-    }
     leaf sequenceNumber {
       type yang:counter32;
       mandatory true;
       description
         "Unique sequence number as described in [RFC3339] for each
         published message.";
+    }
+    leaf publisherId {
+      type uint32;
+      mandatory true;
+      description
+        "Identifier of the publishing process generating this notification.";
     }
   }
 }
