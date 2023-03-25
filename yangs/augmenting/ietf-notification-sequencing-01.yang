@@ -52,7 +52,7 @@ module ietf-notification-sequencing {
     This version of this YANG module is part of RFC XXXX; see the RFC
     itself for full legal notices.";
 
-  revision 2023-03-23 {
+  revision 2023-03-25 {
     description
       "First revision";
     reference
@@ -67,18 +67,18 @@ module ietf-notification-sequencing {
         "IP address or a DNS domain name from the server from which
         the message was published.";
     }
+    leaf publisherId {
+      type uint32;
+      mandatory true;
+      description
+        "Identifier of the publishing process generating this notification.";
+    }
     leaf sequenceNumber {
       type yang:counter32;
       mandatory true;
       description
         "Unique sequence number as described in [RFC3339] for each
         published message.";
-    }
-    leaf publisherId {
-      type uint32;
-      mandatory true;
-      description
-        "Identifier of the publishing process generating this notification.";
     }
   }
 }
