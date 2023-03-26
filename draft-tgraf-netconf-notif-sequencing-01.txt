@@ -160,7 +160,7 @@ Internet-Draft        YANG Notifications Sequencing           March 2023
 
    Figure 1 provides an example of a "push-change-update" message with
    the sysName, publisherId and sequenceNumber.  This "push-change-
-   update" message is encoded XML [W3C.REC-xml-20081126] over the
+   update" message is encoded in XML [W3C.REC-xml-20081126] over the
    Network Configuration Protocol (NETCONF) as per [RFC8640].
 
 

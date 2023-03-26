@@ -161,7 +161,7 @@
 
       <t><xref target="notification_message_example_xml_fig"/> provides an
       example of a "push-change-update" message with the sysName, publisherId and
-      sequenceNumber. This "push-change-update" message is encoded XML <xref
+      sequenceNumber. This "push-change-update" message is encoded in XML <xref
       target="W3C.REC-xml-20081126"/> over the Network Configuration Protocol
       (NETCONF) as per <xref target="RFC8640"/>.</t>
 
