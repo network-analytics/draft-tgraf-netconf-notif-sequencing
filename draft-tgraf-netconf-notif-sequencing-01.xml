@@ -72,7 +72,7 @@
 
     <abstract>
       <t>This document specifies a new YANG module that augment the NETCONF
-      Event Notification header to support hostname and sequence numbers to
+      Event Notification header to support hostname, publisher ID and sequence numbers to
       identify from which network node and at which time the message was
       published. This allows the collector to recognize loss, delay and
       reordering between the publisher and the downstream system storing the
@@ -113,9 +113,10 @@
       IP address.</t>
 
       <t>By extending the NETCONF Event Notification header with sysName,
-      which could be an IP address or a DNS domain name, and a sequence number
-      as described in <xref target="RFC9187"/>, the downstream system is not
-      only able to identify from which network node, subscription, and time
+      which could be an IP address or a DNS domain name, a reference to the YANG 
+      push publisher process and a sequence number as described in
+      <xref target="RFC9187"/>, the downstream system is not only able to identify
+      from which network node, subscription, and time
       the message was published but also, the order of the published
       messages.</t>
 
@@ -143,6 +144,15 @@
       </dl>
 
       <dl>
+        <dt>publisherId:</dt>
+
+        <dd><xref target="I-D.ietf-netconf-distributed-notif"/> describes the
+        ability to publish from network processors directly. With this
+        identifier the publishing process from where the message was published
+        from can be uniquely identified.</dd>
+      </dl>
+
+      <dl>
         <dt>sequenceNumber:</dt>
 
         <dd>Generates a unique sequence number as described in <xref
@@ -150,8 +160,8 @@
       </dl>
 
       <t><xref target="notification_message_example_xml_fig"/> provides an
-      example of a "push-change-update" message with the sysName and
-      sequenceNumber. This "push-change-update" message is encoded XML <xref
+      example of a "push-change-update" message with the sysName, publisherId and
+      sequenceNumber. This "push-change-update" message is encoded in XML <xref
       target="W3C.REC-xml-20081126"/> over the Network Configuration Protocol
       (NETCONF) as per <xref target="RFC8640"/>.</t>
 
@@ -163,6 +173,9 @@
  <sysName xmlns="urn:ietf:params:xml:ns:yang:ietf-notification-sequencing">
   example-router
  </sysName>
+ <publisherId xmlns="urn:ietf:params:xml:ns:yang:ietf-notification-sequencing">
+  1
+ </publisherId>
  <sequenceNumber xmlns="urn:ietf:params:xml:ns:yang:ietf-notification-sequencing">
   187653
  </sequenceNumber>
@@ -195,6 +208,7 @@ module: ietf-notification-sequencing
 
   augment-structure /inotif:notification:
     +-- sysName           inet:host
+    +-- publisherId       uint32
     +-- sequenceNumber    yang:counter32
 ]]></artwork>
           </figure></t>
@@ -212,6 +226,7 @@ module: ietf-notification
   structure notification:
     +-- eventTime                   yang:date-and-time
     +-- inotifseq:sysName           inet:host
+    +-- inotifseq:publisherId       uint32
     +-- inotifseq:sequenceNumber    yang:counter32
 ]]></artwork>
           </figure></t>
@@ -220,7 +235,7 @@ module: ietf-notification
       <section anchor="yang-module" title="YANG Module">
         <t><figure>
             <artwork align="left"><![CDATA[
-<CODE BEGINS> file "ietf-notification-sequencing@2023-03-01.yang"
+<CODE BEGINS> file "ietf-notification-sequencing@2023-03-25.yang"
 module ietf-notification-sequencing {
   yang-version 1.1;
   namespace
@@ -275,7 +290,7 @@ module ietf-notification-sequencing {
     This version of this YANG module is part of RFC XXXX; see the RFC
     itself for full legal notices.";
 
-  revision 2023-03-01 {
+  revision 2023-03-25 {
     description
       "First revision";
     reference
@@ -289,6 +304,12 @@ module ietf-notification-sequencing {
       description
         "IP address or a DNS domain name from the server from which
         the message was published.";
+    }
+    leaf publisherId {
+      type uint32;
+      mandatory true;
+      description
+        "Identifier of the publishing process generating this notification.";
     }
     leaf sequenceNumber {
       type yang:counter32;
@@ -369,6 +390,8 @@ module ietf-notification-sequencing {
       <?rfc include='http://xml.resource.org/public/rfc/bibxml/reference.RFC.9187.xml'?>
 
       <?rfc include='http://xml.resource.org/public/rfc/bibxml-ids/reference.I-D.ahuang-netconf-notif-yang.xml'?>
+
+      <?rfc include='http://xml.resource.org/public/rfc/bibxml-ids/reference.I-D.ietf-netconf-distributed-notif.xml'?>
 
       <reference anchor="W3C.REC-xml-20081126"
                  derivedAnchor="W3C.REC-xml-20081126" quoteTitle="true"
