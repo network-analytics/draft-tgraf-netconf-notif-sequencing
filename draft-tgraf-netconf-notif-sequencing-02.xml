@@ -1,0 +1,442 @@
+<?xml version="1.0" encoding="US-ASCII"?>
+<!DOCTYPE rfc SYSTEM "rfc2629.dtd">
+<?rfc toc="yes"?>
+<?rfc tocompact="yes"?>
+<?rfc tocdepth="2"?>
+<?rfc tocindent="yes"?>
+<?rfc symrefs="yes"?>
+<?rfc sortrefs="yes"?>
+<?rfc comments="yes"?>
+<?rfc inline="yes"?>
+<?rfc compact="yes"?>
+<?rfc subcompact="no"?>
+<rfc category="std" docName="draft-tgraf-netconf-notif-sequencing-02"
+     ipr="trust200902">
+  <front>
+    <title abbrev="YANG Notifications Sequencing">Support of Hostname and
+    Sequencing in YANG Notifications</title>
+
+    <author fullname="Thomas Graf" initials="T" surname="Graf">
+      <organization>Swisscom</organization>
+
+      <address>
+        <postal>
+          <street>Binzring 17</street>
+
+          <city>Zurich</city>
+
+          <code>8045</code>
+
+          <country>Switzerland</country>
+        </postal>
+
+        <email>thomas.graf@swisscom.com</email>
+      </address>
+    </author>
+
+    <author fullname="Jean Quilbeuf" initials="J" surname="Quilbeuf">
+      <organization>Huawei</organization>
+
+      <address>
+        <email>jean.quilbeuf@huawei.com</email>
+      </address>
+    </author>
+
+    <author fullname="Alex Huang Feng" initials="A." surname="Huang Feng">
+      <organization>INSA-Lyon</organization>
+
+      <address>
+        <postal>
+          <street/>
+
+          <city>Lyon</city>
+
+          <region/>
+
+          <code/>
+
+          <country>France</country>
+        </postal>
+
+        <phone/>
+
+        <facsimile/>
+
+        <email>alex.huang-feng@insa-lyon.fr</email>
+
+        <uri/>
+      </address>
+    </author>
+
+    <date day="09" month="September" year="2023"/>
+
+    <abstract>
+      <t>This document specifies a new YANG module that augment the NETCONF
+      Event Notification header to support hostname, Message Publisher ID and
+      sequence numbers to identify from which network node and at which time
+      the message was published. This allows the collector to recognize loss,
+      delay and reordering between the publisher and the downstream system
+      storing the message.</t>
+    </abstract>
+  </front>
+
+  <middle>
+    <section anchor="Introduction" title="Introduction">
+      <t>Section 4 of <xref target="RFC5277"/> describes the NETCONF event
+      notification header using a XML Schema. In the metadata of the event
+      notification header, only the eventTime is present indicating at which
+      time the notification message was published. For other encodings, the
+      same schema is implemented using a YANG module in <xref
+      target="I-D.ahuang-netconf-notif-yang"/>. Furthermore, in Section 3.7 of
+      <xref target="RFC8641"/>, the subscription ID is added to the
+      "push-update" and "push-change-update" notification messages allowing to
+      recognize to which xpath or sub-tree the node was subscribed to.</t>
+
+      <t>When the NETCONF event notification message is forwarded from the
+      receiver to another system, such as a messaging system or a time series
+      database where the message is stored, the transport context is lost
+      since it is not part of the NETCONF event notification message metadata.
+      Therefore, the downstream system is unable to associate the message to
+      the publishing process (the exporting router), nor able to detect
+      message loss or reordering.</t>
+
+      <t>Today, network operators workaround this impediment by preserving the
+      transport source IP address and sequence numbers of the publishing
+      process. However, this implies that this information needs to be encoded
+      in the NETCONF event notification message which impacts the semantic
+      readability of the message in the downstream system.</t>
+
+      <t>On top of that, the transport source IP address might not represent
+      the management IP address by which the YANG push server should be known.
+      In other terms, the source-host <xref target="RFC6470"/>, which is the
+      "Address of the remote host for the session" might not be the management
+      IP address.</t>
+
+      <t>By extending the NETCONF Event Notification header with sysName,
+      which could be an IP address or a DNS domain name, a reference to the
+      YANG push publisher process and a sequence number as described in <xref
+      target="RFC9187"/>, the downstream system is not only able to identify
+      from which network node, subscription, and time the message was
+      published but also, the order of the published messages.</t>
+
+      <t>To correlate network data among different Network Telemetry planes as
+      described in Section 3.1 of <xref target="RFC9232"/> or among different
+      YANG push subscription types defined in Section 3.1 of <xref
+      target="RFC8641"/>, sysName describes from which network node the state
+      change was observed or from when to when the data was accounted. This is
+      essential for understanding the timely relationship among these
+      different planes and YANG push subscription types.</t>
+    </section>
+
+    <section anchor="Streaming-Update"
+             title="Extend the NETCONF Event Notification Header">
+      <t>Besides the eventTime described in Section 2.2.1 of <xref
+      target="RFC5277"/> the following metadata objects are part of a
+      "push-update" and "push-change-update" notification message.</t>
+
+      <dl>
+        <dt>sysName:</dt>
+
+        <dd>Describes the hostname following the 'sysName' object definition
+        in <xref target="RFC1213"/> from where the message was published
+        from.</dd>
+      </dl>
+
+      <dl>
+        <dt>MessagepublisherId:</dt>
+
+        <dd>Message Publisher ID is a 32-bit identifier defined in <xref
+        target="I-D.ietf-netconf-distributed-notif"/>. This identifier is
+        unique to the publisher node and identifies the publishing process of
+        the node to allow the disambiguation of an information source.</dd>
+      </dl>
+
+      <dl>
+        <dt>sequenceNumber:</dt>
+
+        <dd>Generates a unique sequence number as described in <xref
+        target="RFC9187"/> for each published message.</dd>
+      </dl>
+
+      <t><xref target="notification_message_example_xml_fig"/> provides an
+      example of a "push-change-update" message with the sysName,
+      messagepublisherId and sequenceNumber. This "push-change-update" message
+      is encoded in XML <xref target="W3C.REC-xml-20081126"/> over the Network
+      Configuration Protocol (NETCONF) as per <xref target="RFC8640"/>.</t>
+
+      <figure anchor="notification_message_example_xml_fig"
+              title="XML Push Example for a subscription-modified notification message">
+        <artwork><![CDATA[
+<notification xmlns="urn:ietf:params:xml:ns:netconf:notification:1.0">
+ <eventTime>2023-02-04T16:30:11.22Z</eventTime>
+ <sysName xmlns="urn:ietf:params:xml:ns:yang:ietf-notification-sequencing">
+  example-router
+ </sysName>
+ <messagePublisherId xmlns="urn:ietf:params:xml:ns:yang:ietf-notification-sequencing">
+  1
+ </messagePublisherId>
+ <sequenceNumber xmlns="urn:ietf:params:xml:ns:yang:ietf-notification-sequencing">
+  187653
+ </sequenceNumber>
+ <push-update xmlns="urn:ietf:params:xml:ns:yang:ietf-yang-push">
+   <id>1011</id>
+   <datastore-contents>
+      <interfaces xmlns="urn:ietf:params:xml:ns:yang:ietf-interfaces">
+       <interface>
+         <name>eth0</name>
+         <oper-status>up</oper-status>
+       </interface>
+     </interfaces>
+   </datastore-contents>
+ </push-update>
+</notification>        
+        ]]></artwork>
+      </figure>
+    </section>
+
+    <section anchor="yang-model" title="YANG Module for Event Notifications">
+      <section anchor="yang-tree" title="YANG Tree Diagram">
+        <t>This ietf-notification-sequencing YANG module augments the
+        ietf-notification YANG module specified in <xref
+        target="I-D.ahuang-netconf-notif-yang"/> adding the sysName and the
+        sequenceNumber leaves as described in Section 2 of this document.</t>
+
+        <t><figure>
+            <artwork align="left"><![CDATA[
+module: ietf-notification-sequencing
+
+  augment-structure /inotif:notification:
+    +-- sysName                  inet:host
+    +-- messagePublisherId       uint32
+    +-- sequenceNumber           yang:counter32
+]]></artwork>
+          </figure></t>
+      </section>
+
+      <section anchor="yang-full-tree" title="Full Tree View">
+        <t>The following is the YANG tree diagram <xref target="RFC8340"/> for
+        the ietf-notification-sequencing augmentation within the
+        ietf-notification.</t>
+
+        <t><figure>
+            <artwork align="left"><![CDATA[
+module: ietf-notification
+
+  structure notification:
+    +-- eventTime                          yang:date-and-time
+    +-- inotifseq:sysName                  inet:host
+    +-- inotifseq:messagePublisherId       uint32
+    +-- inotifseq:sequenceNumber           yang:counter32
+]]></artwork>
+          </figure></t>
+      </section>
+
+      <section anchor="yang-module" title="YANG Module">
+        <t><figure>
+            <artwork align="left"><![CDATA[
+<CODE BEGINS> file "ietf-notification-sequencing@2023-03-25.yang"
+module ietf-notification-sequencing {
+  yang-version 1.1;
+  namespace
+    "urn:ietf:params:xml:ns:yang:ietf-notification-sequencing";
+  prefix inotifseq;
+  import ietf-inet-types {
+    prefix inet;
+    reference
+      "RFC 6991: Common YANG Data Types";
+  }
+  import ietf-yang-types {
+    prefix yang;
+    reference
+      "RFC 6991: Common YANG Data Types";
+  }
+  import ietf-notification {
+    prefix inotif;
+    reference
+      "draft-ahuang-netconf-notif-yang: NETCONF Event Notification YANG";
+  }
+  import ietf-yang-structure-ext {
+    prefix sx;
+    reference
+      "RFC 8791: YANG Data Structure Extensions";
+  }
+
+  organization "IETF NETCONF (Network Configuration) Working Group";
+  contact
+    "WG Web:   <http:/tools.ietf.org/wg/netconf/>
+     WG List:  <mailto:netconf@ietf.org>
+
+     Authors:  Thomas Graf
+               <mailto:thomas.graf@swisscom.com>
+               Jean Quilbeuf
+               <mailto:jean.quilbeuf@huawei.com>
+               Alex Huang Feng
+               <mailto:alex.huang-feng@insa-lyon.fr>";
+
+  description
+    "Defines NETCONF Event Notification structure with the sysName and
+    the sequenceNumber.
+
+    Copyright (c) 2023 IETF Trust and the persons identified as
+    authors of the code.  All rights reserved.
+
+    Redistribution and use in source and binary forms, with or without
+    modification, is permitted pursuant to, and subject to the license
+    terms contained in, the Revised BSD License set forth in Section
+    4.c of the IETF Trust's Legal Provisions Relating to IETF Documents
+    (https://trustee.ietf.org/license-info).
+
+    This version of this YANG module is part of RFC XXXX; see the RFC
+    itself for full legal notices.";
+
+  revision 2023-03-25 {
+    description
+      "First revision";
+    reference
+      "RFC XXXX: YANG Notifications Sequencing";
+  }
+
+  sx:augment-structure "/inotif:notification" {
+    leaf sysName {
+      type inet:host;
+      mandatory true;
+      description
+        "IP address or a DNS domain name from the server from which
+        the message was published.";
+    }
+    leaf messagePublisherId {
+      type uint32;
+      mandatory true;
+      description
+        "Identifier of the publishing process generating this notification.";
+    }
+    leaf sequenceNumber {
+      type yang:counter32;
+      mandatory true;
+      description
+        "Unique sequence number as described in [RFC3339] for each
+        published message.";
+    }
+  }
+}
+<CODE ENDS>]]></artwork>
+          </figure></t>
+      </section>
+    </section>
+
+    <section anchor="Security" title="Security Considerations">
+      <t>The security considerations for the NETCONF Event notifications are
+      described in <xref target="RFC5277"/>. This documents adds no additional
+      security considerations.</t>
+    </section>
+
+    <section anchor="IANA_Considerations" title="IANA Considerations">
+      <section title="IETF XML Registry">
+        <t>This document registers the following URIs in the "IETF XML
+        Registry" <xref target="RFC3688"/>:</t>
+
+        <t><figure>
+            <artwork align="left"><![CDATA[
+  URI: urn:ietf:params:xml:ns:yang:ietf-notification-sequencing
+  Registrant Contact: The IESG.
+  XML: N/A; the requested URI is an XML namespace.]]></artwork>
+          </figure></t>
+      </section>
+
+      <section title="YANG Module Name">
+        <t>This document registers the following YANG modules in the "YANG
+        Module Names" registry <xref target="RFC6020"/>:</t>
+
+        <t><figure>
+            <artwork align="left"><![CDATA[
+  name: ietf-notification-sequencing
+  namespace: urn:ietf:params:xml:ns:yang:ietf-notification-sequencing
+  prefix: inotifseq
+  reference: RFC XXXX]]></artwork>
+          </figure></t>
+      </section>
+    </section>
+
+    <section anchor="Operational" title="Operational Considerations">
+      <section anchor="operational_sysname_correlation"
+               title="SysName Correlation">
+        <t>In order to allow data correlation among BGP Monitoring Protocol
+        (BMP) <xref target="RFC7854"/> and YANG push, the same hostname value
+        should be used as described in section 4.4 of <xref target="RFC7854"/>
+        for the information TLV in the init BMP message type.</t>
+      </section>
+    </section>
+
+    <section anchor="Acknowledgements" title="Acknowledgements">
+      <t>The authors would like to thank Rob Wilton, Nick Corran, Pierre
+      Francois, Benoit Claise, Ahmed Elhassany and Ignacio Dominguez
+      Martinez-Casanueva for their review and valuable comments.</t>
+    </section>
+  </middle>
+
+  <back>
+    <references title="Normative References">
+      <?rfc include='http://xml.resource.org/public/rfc/bibxml/reference.RFC.1213.xml'?>
+
+      <?rfc include='http://xml.resource.org/public/rfc/bibxml/reference.RFC.3688.xml'?>
+
+      <?rfc include='http://xml.resource.org/public/rfc/bibxml/reference.RFC.5277.xml'?>
+
+      <?rfc include='http://xml.resource.org/public/rfc/bibxml/reference.RFC.6020.xml'?>
+
+      <?rfc include='http://xml.resource.org/public/rfc/bibxml/reference.RFC.8340.xml'?>
+
+      <?rfc include='http://xml.resource.org/public/rfc/bibxml/reference.RFC.9187.xml'?>
+
+      <?rfc include='http://xml.resource.org/public/rfc/bibxml-ids/reference.I-D.ahuang-netconf-notif-yang.xml'?>
+
+      <?rfc include='http://xml.resource.org/public/rfc/bibxml-ids/reference.I-D.ietf-netconf-distributed-notif.xml'?>
+
+      <reference anchor="W3C.REC-xml-20081126"
+                 derivedAnchor="W3C.REC-xml-20081126" quoteTitle="true"
+                 target="https://www.w3.org/TR/2008/REC-xml-20081126">
+        <front>
+          <title>Extensible Markup Language (XML) 1.0 (Fifth Edition)</title>
+
+          <author fullname="Tim Bray" initials="T." surname="Bray">
+            <organization showOnFrontPage="true"/>
+          </author>
+
+          <author fullname="Jean Paoli" initials="J." surname="Paoli">
+            <organization showOnFrontPage="true"/>
+          </author>
+
+          <author fullname="Michael Sperberg-McQueen" initials="M."
+                  surname="Sperberg-McQueen">
+            <organization showOnFrontPage="true"/>
+          </author>
+
+          <author fullname="Eve Maler" initials="E." surname="Maler">
+            <organization showOnFrontPage="true"/>
+          </author>
+
+          <author fullname="Francois Yergeau" initials="F." surname="Yergeau">
+            <organization showOnFrontPage="true"/>
+          </author>
+
+          <date month="November" year="2008"/>
+        </front>
+
+        <refcontent>World Wide Web Consortium Recommendation
+        REC-xml-20081126</refcontent>
+      </reference>
+    </references>
+
+    <references title="Informative References">
+      <?rfc include='http://xml.resource.org/public/rfc/bibxml/reference.RFC.6470.xml'?>
+
+      <?rfc include='http://xml.resource.org/public/rfc/bibxml/reference.RFC.7854.xml'?>
+
+      <?rfc include='http://xml.resource.org/public/rfc/bibxml/reference.RFC.8640.xml'?>
+
+      <?rfc include='http://xml.resource.org/public/rfc/bibxml/reference.RFC.8641.xml'?>
+
+      <?rfc include='http://xml.resource.org/public/rfc/bibxml/reference.RFC.9232.xml'?>
+    </references>
+  </back>
+</rfc>
