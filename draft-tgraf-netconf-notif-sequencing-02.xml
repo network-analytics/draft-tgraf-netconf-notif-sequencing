@@ -143,7 +143,7 @@
       </dl>
 
       <dl>
-        <dt>MessagepublisherId:</dt>
+        <dt>messagePublisherId:</dt>
 
         <dd>Message Publisher ID is a 32-bit identifier defined in <xref
         target="I-D.ietf-netconf-distributed-notif"/>. This identifier is
@@ -160,7 +160,7 @@
 
       <t><xref target="notification_message_example_xml_fig"/> provides an
       example of a "push-change-update" message with the sysName,
-      messagepublisherId and sequenceNumber. This "push-change-update" message
+      messagePublisherId and sequenceNumber. This "push-change-update" message
       is encoded in XML <xref target="W3C.REC-xml-20081126"/> over the Network
       Configuration Protocol (NETCONF) as per <xref target="RFC8640"/>.</t>
 

@@ -150,7 +150,7 @@ Internet-Draft        YANG Notifications Sequencing       September 2023
    sysName:  Describes the hostname following the 'sysName' object
       definition in [RFC1213] from where the message was published from.
 
-   MessagepublisherId:  Message Publisher ID is a 32-bit identifier
+   messagePublisherId:  Message Publisher ID is a 32-bit identifier
       defined in [I-D.ietf-netconf-distributed-notif].  This identifier
       is unique to the publisher node and identifies the publishing
       process of the node to allow the disambiguation of an information
@@ -171,7 +171,7 @@ Internet-Draft        YANG Notifications Sequencing       September 2023
 
 
    Figure 1 provides an example of a "push-change-update" message with
-   the sysName, messagepublisherId and sequenceNumber.  This "push-
+   the sysName, messagePublisherId and sequenceNumber.  This "push-
    change-update" message is encoded in XML [W3C.REC-xml-20081126] over
    the Network Configuration Protocol (NETCONF) as per [RFC8640].
 
