@@ -68,7 +68,7 @@
       </address>
     </author>
 
-    <date day="09" month="September" year="2023"/>
+    <date day="07" month="October" year="2023"/>
 
     <abstract>
       <t>This document specifies a new YANG module that augment the NETCONF

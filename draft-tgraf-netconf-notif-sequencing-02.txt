@@ -5,10 +5,10 @@
 Network Working Group                                            T. Graf
 Internet-Draft                                                  Swisscom
 Intended status: Standards Track                             J. Quilbeuf
-Expires: 12 March 2024                                            Huawei
+Expires: 9 April 2024                                             Huawei
                                                            A. Huang Feng
                                                                INSA-Lyon
-                                                        9 September 2023
+                                                          7 October 2023
 
 
         Support of Hostname and Sequencing in YANG Notifications
@@ -38,7 +38,7 @@ Status of This Memo
    time.  It is inappropriate to use Internet-Drafts as reference
    material or to cite them other than as "work in progress."
 
-   This Internet-Draft will expire on 12 March 2024.
+   This Internet-Draft will expire on 9 April 2024.
 
 Copyright Notice
 
@@ -53,9 +53,9 @@ Copyright Notice
 
 
 
-Graf, et al.              Expires 12 March 2024                 [Page 1]
+Graf, et al.              Expires 9 April 2024                  [Page 1]
 
-Internet-Draft        YANG Notifications Sequencing       September 2023
+Internet-Draft        YANG Notifications Sequencing         October 2023
 
 
    extracted from this document must include Revised BSD License text as
@@ -109,9 +109,9 @@ Table of Contents
 
 
 
-Graf, et al.              Expires 12 March 2024                 [Page 2]
+Graf, et al.              Expires 9 April 2024                  [Page 2]
 
-Internet-Draft        YANG Notifications Sequencing       September 2023
+Internet-Draft        YANG Notifications Sequencing         October 2023
 
 
    Today, network operators workaround this impediment by preserving the
@@ -147,8 +147,9 @@ Internet-Draft        YANG Notifications Sequencing       September 2023
    following metadata objects are part of a "push-update" and "push-
    change-update" notification message.
 
-   sysName:  Describes the hostname following the 'sysName' object
-      definition in [RFC1213] from where the message was published from.
+   sysName:
+      Describes the hostname following the 'sysName' object definition
+      in [RFC1213] from where the message was published from.
 
    messagePublisherId:  Message Publisher ID is a 32-bit identifier
       defined in [I-D.ietf-netconf-distributed-notif].  This identifier
@@ -164,10 +165,9 @@ Internet-Draft        YANG Notifications Sequencing       September 2023
 
 
 
-
-Graf, et al.              Expires 12 March 2024                 [Page 3]
+Graf, et al.              Expires 9 April 2024                  [Page 3]
 
-Internet-Draft        YANG Notifications Sequencing       September 2023
+Internet-Draft        YANG Notifications Sequencing         October 2023
 
 
    Figure 1 provides an example of a "push-change-update" message with
@@ -221,9 +221,9 @@ Internet-Draft        YANG Notifications Sequencing       September 2023
 
 
 
-Graf, et al.              Expires 12 March 2024                 [Page 4]
+Graf, et al.              Expires 9 April 2024                  [Page 4]
 
-Internet-Draft        YANG Notifications Sequencing       September 2023
+Internet-Draft        YANG Notifications Sequencing         October 2023
 
 
 3.2.  Full Tree View
@@ -277,9 +277,9 @@ Internet-Draft        YANG Notifications Sequencing       September 2023
 
 
 
-Graf, et al.              Expires 12 March 2024                 [Page 5]
+Graf, et al.              Expires 9 April 2024                  [Page 5]
 
-Internet-Draft        YANG Notifications Sequencing       September 2023
+Internet-Draft        YANG Notifications Sequencing         October 2023
 
 
                   <mailto:thomas.graf@swisscom.com>
@@ -333,9 +333,9 @@ Internet-Draft        YANG Notifications Sequencing       September 2023
 
 
 
-Graf, et al.              Expires 12 March 2024                 [Page 6]
+Graf, et al.              Expires 9 April 2024                  [Page 6]
 
-Internet-Draft        YANG Notifications Sequencing       September 2023
+Internet-Draft        YANG Notifications Sequencing         October 2023
 
 
            published message.";
@@ -389,9 +389,9 @@ Internet-Draft        YANG Notifications Sequencing       September 2023
 
 
 
-Graf, et al.              Expires 12 March 2024                 [Page 7]
+Graf, et al.              Expires 9 April 2024                  [Page 7]
 
-Internet-Draft        YANG Notifications Sequencing       September 2023
+Internet-Draft        YANG Notifications Sequencing         October 2023
 
 
 8.  References
@@ -445,9 +445,9 @@ Internet-Draft        YANG Notifications Sequencing       September 2023
 
 
 
-Graf, et al.              Expires 12 March 2024                 [Page 8]
+Graf, et al.              Expires 9 April 2024                  [Page 8]
 
-Internet-Draft        YANG Notifications Sequencing       September 2023
+Internet-Draft        YANG Notifications Sequencing         October 2023
 
 
               Edition)", World Wide Web Consortium Recommendation REC-
@@ -501,9 +501,9 @@ Authors' Addresses
 
 
 
-Graf, et al.              Expires 12 March 2024                 [Page 9]
+Graf, et al.              Expires 9 April 2024                  [Page 9]
 
-Internet-Draft        YANG Notifications Sequencing       September 2023
+Internet-Draft        YANG Notifications Sequencing         October 2023
 
 
    Alex Huang Feng
@@ -557,4 +557,4 @@ Internet-Draft        YANG Notifications Sequencing       September 2023
 
 
 
-Graf, et al.              Expires 12 March 2024                [Page 10]
+Graf, et al.              Expires 9 April 2024                 [Page 10]
