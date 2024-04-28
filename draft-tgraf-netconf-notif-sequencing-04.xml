@@ -277,7 +277,7 @@ module ietf-notification-sequencing {
     This version of this YANG module is part of RFC XXXX; see the RFC
     itself for full legal notices.";
 
-  revision 2023-04-14 {
+  revision 2023-04-28 {
     description
       "First revision";
     reference
