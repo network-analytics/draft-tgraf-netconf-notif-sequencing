@@ -254,6 +254,12 @@ module ietf-notification-sequencing {
       "RFC 9196: YANG Modules Describing Capabilities for
        Systems and Datastore Update Notifications";
   }
+  import ietf-notification-capabilities {
+    prefix notc;
+    reference
+      "RFC 9196: YANG Modules Describing Capabilities for
+       Systems and Datastore Update Notifications";
+  }
   import ietf-yang-structure-ext {
     prefix sx;
     reference
@@ -297,17 +303,17 @@ module ietf-notification-sequencing {
   feature sysname-sequence {
     description
       "This feature indicates that sysName and sequenceNumber are supported
-      in YANG-Push notifications.";
+      in notifications.";
   }
   grouping sysname-sequence-notification-capabilities {
     description
       "Capabilities related to YANG-Push notifications";
       leaf sysname-sequence-supported {
         if-feature "sysname-sequence";
-        type notification-support;
+        type notc:notification-support;
         description
           "Specifies whether the publisher supports sysName and 
-          sequenceNumber in YANG-Push notifications.";
+          sequenceNumber in notifications.";
     }
   }
   sx:augment-structure "/inotif:notification" {

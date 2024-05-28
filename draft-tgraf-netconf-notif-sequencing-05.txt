@@ -74,7 +74,7 @@ Table of Contents
      4.1.  6WIND VSR . . . . . . . . . . . . . . . . . . . . . . . .   7
    5.  Security Considerations . . . . . . . . . . . . . . . . . . .   7
    6.  IANA Considerations . . . . . . . . . . . . . . . . . . . . .   7
-     6.1.  IETF XML Registry . . . . . . . . . . . . . . . . . . . .   7
+     6.1.  IETF XML Registry . . . . . . . . . . . . . . . . . . . .   8
      6.2.  YANG Module Name  . . . . . . . . . . . . . . . . . . . .   8
    7.  Operational Considerations  . . . . . . . . . . . . . . . . .   8
      7.1.  SysName Correlation . . . . . . . . . . . . . . . . . . .   8
@@ -262,18 +262,18 @@ Internet-Draft        YANG Notifications Sequencing             May 2024
          "RFC 9196: YANG Modules Describing Capabilities for
           Systems and Datastore Update Notifications";
      }
+     import ietf-notification-capabilities {
+       prefix notc;
+       reference
+         "RFC 9196: YANG Modules Describing Capabilities for
+          Systems and Datastore Update Notifications";
+     }
      import ietf-yang-structure-ext {
        prefix sx;
        reference
          "RFC 8791: YANG Data Structure Extensions";
      }
 
-     organization "IETF NETCONF (Network Configuration) Working Group";
-     contact
-       "WG Web:   <http:/tools.ietf.org/wg/netconf/>
-        WG List:  <mailto:netconf@ietf.org>
-
-        Authors:  Thomas Graf
 
 
 
@@ -282,6 +282,12 @@ Graf, et al.            Expires 29 November 2024                [Page 5]
 Internet-Draft        YANG Notifications Sequencing             May 2024
 
 
+     organization "IETF NETCONF (Network Configuration) Working Group";
+     contact
+       "WG Web:   <http:/tools.ietf.org/wg/netconf/>
+        WG List:  <mailto:netconf@ietf.org>
+
+        Authors:  Thomas Graf
                   <mailto:thomas.graf@swisscom.com>
                   Jean Quilbeuf
                   <mailto:jean.quilbeuf@huawei.com>
@@ -313,23 +319,17 @@ Internet-Draft        YANG Notifications Sequencing             May 2024
      feature sysname-sequence {
        description
          "This feature indicates that sysName and sequenceNumber are supported
-         in YANG-Push notifications.";
+         in notifications.";
      }
      grouping sysname-sequence-notification-capabilities {
        description
          "Capabilities related to YANG-Push notifications";
          leaf sysname-sequence-supported {
            if-feature "sysname-sequence";
-           type notification-support;
+           type notc:notification-support;
            description
              "Specifies whether the publisher supports sysName and
-             sequenceNumber in YANG-Push notifications.";
-       }
-     }
-     sx:augment-structure "/inotif:notification" {
-       leaf sysName {
-         type inet:host;
-         mandatory true;
+             sequenceNumber in notifications.";
 
 
 
@@ -338,6 +338,12 @@ Graf, et al.            Expires 29 November 2024                [Page 6]
 Internet-Draft        YANG Notifications Sequencing             May 2024
 
 
+       }
+     }
+     sx:augment-structure "/inotif:notification" {
+       leaf sysName {
+         type inet:host;
+         mandatory true;
          description
            "Fully-qualified domain name of the node according to [RFC1213].
            This value is usually configured on the node by the administrator
@@ -377,14 +383,8 @@ Internet-Draft        YANG Notifications Sequencing             May 2024
 
 6.  IANA Considerations
 
-6.1.  IETF XML Registry
 
-   This document registers the following URIs in the "IETF XML Registry"
-   [RFC3688]:
 
-     URI: urn:ietf:params:xml:ns:yang:ietf-notification-sequencing
-     Registrant Contact: The IESG.
-     XML: N/A; the requested URI is an XML namespace.
 
 
 
@@ -393,6 +393,15 @@ Graf, et al.            Expires 29 November 2024                [Page 7]
 
 Internet-Draft        YANG Notifications Sequencing             May 2024
 
+
+6.1.  IETF XML Registry
+
+   This document registers the following URIs in the "IETF XML Registry"
+   [RFC3688]:
+
+     URI: urn:ietf:params:xml:ns:yang:ietf-notification-sequencing
+     Registrant Contact: The IESG.
+     XML: N/A; the requested URI is an XML namespace.
 
 6.2.  YANG Module Name
 
@@ -430,6 +439,17 @@ Internet-Draft        YANG Notifications Sequencing             May 2024
               January 2024, <https://datatracker.ietf.org/doc/html/
               draft-ahuang-netconf-notif-yang-04>.
 
+
+
+
+
+
+
+Graf, et al.            Expires 29 November 2024                [Page 8]
+
+Internet-Draft        YANG Notifications Sequencing             May 2024
+
+
    [RFC1213]  McCloghrie, K. and M. Rose, "Management Information Base
               for Network Management of TCP/IP-based internets: MIB-II",
               STD 17, RFC 1213, DOI 10.17487/RFC1213, March 1991,
@@ -442,13 +462,6 @@ Internet-Draft        YANG Notifications Sequencing             May 2024
    [RFC5277]  Chisholm, S. and H. Trevino, "NETCONF Event
               Notifications", RFC 5277, DOI 10.17487/RFC5277, July 2008,
               <https://www.rfc-editor.org/info/rfc5277>.
-
-
-
-Graf, et al.            Expires 29 November 2024                [Page 8]
-
-Internet-Draft        YANG Notifications Sequencing             May 2024
-
 
    [RFC6020]  Bjorklund, M., Ed., "YANG - A Data Modeling Language for
               the Network Configuration Protocol (NETCONF)", RFC 6020,
@@ -485,6 +498,14 @@ Internet-Draft        YANG Notifications Sequencing             May 2024
               <https://datatracker.ietf.org/doc/html/draft-ietf-netconf-
               udp-notif-12>.
 
+
+
+
+Graf, et al.            Expires 29 November 2024                [Page 9]
+
+Internet-Draft        YANG Notifications Sequencing             May 2024
+
+
    [RFC6470]  Bierman, A., "Network Configuration Protocol (NETCONF)
               Base Notifications", RFC 6470, DOI 10.17487/RFC6470,
               February 2012, <https://www.rfc-editor.org/info/rfc6470>.
@@ -493,18 +514,6 @@ Internet-Draft        YANG Notifications Sequencing             May 2024
               Monitoring Protocol (BMP)", RFC 7854,
               DOI 10.17487/RFC7854, June 2016,
               <https://www.rfc-editor.org/info/rfc7854>.
-
-
-
-
-
-
-
-
-Graf, et al.            Expires 29 November 2024                [Page 9]
-
-Internet-Draft        YANG Notifications Sequencing             May 2024
-
 
    [RFC8640]  Voit, E., Clemm, A., Gonzalez Prieto, A., Nilsen-Nygaard,
               E., and A. Tripathy, "Dynamic Subscription to YANG Events
@@ -541,15 +550,6 @@ Authors' Addresses
    Lyon
    France
    Email: alex.huang-feng@insa-lyon.fr
-
-
-
-
-
-
-
-
-
 
 
 
