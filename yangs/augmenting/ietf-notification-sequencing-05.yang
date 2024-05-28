@@ -18,13 +18,13 @@ module ietf-notification-sequencing {
     reference
       "draft-ahuang-netconf-notif-yang: NETCONF Event Notification YANG";
   }
-  import ietf-notification-capabilities {
-    prefix notc;
+  import ietf-system-capabilities {
+    prefix sysc;
     reference
       "RFC 9196: YANG Modules Describing Capabilities for
        Systems and Datastore Update Notifications";
   }
-    import ietf-yang-structure-ext {
+  import ietf-yang-structure-ext {
     prefix sx;
     reference
       "RFC 8791: YANG Data Structure Extensions";
@@ -64,7 +64,22 @@ module ietf-notification-sequencing {
     reference
       "RFC XXXX: YANG Notifications Sequencing";
   }
-
+  feature sysname-sequence {
+    description
+      "This feature indicates that sysName and sequenceNumber are supported
+      in notifications.";
+  }
+  grouping sysname-sequence-notification-capabilities {
+    description
+      "Capabilities related to YANG-Push notifications";
+      leaf sysname-sequence-supported {
+        if-feature "sysname-sequence";
+        type notification-support;
+        description
+          "Specifies whether the publisher supports sysName and 
+          sequenceNumber in notifications.";
+    }
+  }
   sx:augment-structure "/inotif:notification" {
     leaf sysName {
       type inet:host;
@@ -82,21 +97,9 @@ module ietf-notification-sequencing {
         published message.";
     }
   }
-  sx:augment-structure "/notc:subscription-capabilities" {
-    leaf sysname-notifications-supported {
-      type notification-support;
-      description
-        "Specifies whether the publisher is capable of
-        including the Fully-qualified domain name of 
-        the node according to [RFC1213] in the notifications.";
-    }
-    leaf sequence-number-notifications-supported {
-      type notification-support;
-      description
-        "Specifies whether the publisher is capable of
-        including a unique sequence number as described in 
-        [RFC3339] for each published message in the 
-        notifications.";
-    }
-  }  
+  augment "/sysc:system-capabilities" {
+    description
+      "Add system level capabilities";
+    uses sysname-sequence-notification-capabilities;
+  }
 }
