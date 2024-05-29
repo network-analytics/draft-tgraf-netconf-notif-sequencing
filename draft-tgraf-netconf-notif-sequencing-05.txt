@@ -17,11 +17,11 @@ Expires: 29 November 2024                                         Huawei
 Abstract
 
    This document specifies a new YANG module that augment the NETCONF
-   Event Notification header to support hostname and sequence numbers to
-   identify from which network node and at which time the message was
-   published.  This allows the collector to recognize loss, delay and
-   reordering between the publisher and the downstream system storing
-   the message.
+   Event Notification header to support the hostname and sequence
+   numbers to identify from which network node and at which time the
+   message was published.  This allows the collector to recognize loss,
+   delay and reordering between the publisher and the downstream system
+   storing the messages.
 
 Status of This Memo
 
@@ -70,19 +70,19 @@ Table of Contents
      3.1.  YANG Tree Diagram . . . . . . . . . . . . . . . . . . . .   4
      3.2.  Full Tree View  . . . . . . . . . . . . . . . . . . . . .   4
      3.3.  YANG Module . . . . . . . . . . . . . . . . . . . . . . .   5
-   4.  Implementation Status . . . . . . . . . . . . . . . . . . . .   7
-     4.1.  6WIND VSR . . . . . . . . . . . . . . . . . . . . . . . .   7
-   5.  Security Considerations . . . . . . . . . . . . . . . . . . .   7
-   6.  IANA Considerations . . . . . . . . . . . . . . . . . . . . .   7
+   4.  Implementation Status . . . . . . . . . . . . . . . . . . . .   8
+     4.1.  6WIND VSR . . . . . . . . . . . . . . . . . . . . . . . .   8
+   5.  Security Considerations . . . . . . . . . . . . . . . . . . .   8
+   6.  IANA Considerations . . . . . . . . . . . . . . . . . . . . .   8
      6.1.  IETF XML Registry . . . . . . . . . . . . . . . . . . . .   8
-     6.2.  YANG Module Name  . . . . . . . . . . . . . . . . . . . .   8
-   7.  Operational Considerations  . . . . . . . . . . . . . . . . .   8
-     7.1.  SysName Correlation . . . . . . . . . . . . . . . . . . .   8
-   8.  Acknowledgements  . . . . . . . . . . . . . . . . . . . . . .   8
-   9.  References  . . . . . . . . . . . . . . . . . . . . . . . . .   8
-     9.1.  Normative References  . . . . . . . . . . . . . . . . . .   8
-     9.2.  Informative References  . . . . . . . . . . . . . . . . .   9
-   Authors' Addresses  . . . . . . . . . . . . . . . . . . . . . . .  10
+     6.2.  YANG Module Name  . . . . . . . . . . . . . . . . . . . .   9
+   7.  Operational Considerations  . . . . . . . . . . . . . . . . .   9
+     7.1.  SysName Correlation . . . . . . . . . . . . . . . . . . .   9
+   8.  Acknowledgements  . . . . . . . . . . . . . . . . . . . . . .   9
+   9.  References  . . . . . . . . . . . . . . . . . . . . . . . . .   9
+     9.1.  Normative References  . . . . . . . . . . . . . . . . . .   9
+     9.2.  Informative References  . . . . . . . . . . . . . . . . .  10
+   Authors' Addresses  . . . . . . . . . . . . . . . . . . . . . . .  11
 
 1.  Introduction
 
@@ -98,11 +98,11 @@ Table of Contents
 
    When the NETCONF event notification message is forwarded from the
    receiver to another system, such as a messaging system or a time
-   series database where the message is stored, the transport context is
-   lost since it is not part of the NETCONF event notification message
-   metadata.  Therefore, the downstream system is unable to associate
-   the message to the publishing process (the exporting router), nor
-   able to detect message loss or reordering.
+   series database, the transport context is lost since it is not part
+   of the NETCONF event notification message metadata.  Therefore, the
+   downstream system is unable to associate the message to the
+   publishing process (the exporting router), nor able to detect message
+   loss or reordering.
 
 
 
@@ -121,13 +121,13 @@ Internet-Draft        YANG Notifications Sequencing             May 2024
    semantic readability of the message in the downstream system.
 
    On top of that, the transport source IP address might not represent
-   the management IP address by which the YANG push server should be
+   the management IP address by which the YANG Push server should be
    known.  In other terms, the source-host [RFC6470], which is the
    "Address of the remote host for the session" might not be the
    management IP address.
 
-   By extending the NETCONF Event Notification header with sysName, the
-   node's fully-qualified domain name, a reference to the YANG push
+   By extending the NETCONF Event Notification header with a sysName,
+   the node's fully-qualified domain name, a reference to the YANG Push
    publisher process and a sequence number as described in [RFC9187],
    the downstream system is not only able to identify from which network
    node, subscription, and time the message was published but also, the
@@ -198,26 +198,26 @@ Internet-Draft        YANG Notifications Sequencing             May 2024
 
 3.1.  YANG Tree Diagram
 
-   This ietf-notification-sequencing YANG module augments the ietf-
-   notification YANG module specified in [I-D.ahuang-netconf-notif-yang]
-   adding the sysName and the sequenceNumber leaves as described in
-   Section 2 of this document and augments [RFC9196] to add a system
-   level capability.
+   This ietf-notification-sequencing YANG module augments the "ietf-
+   notification" YANG module specified in Section 5 of
+   [I-D.ahuang-netconf-notif-yang] adding the sysName and the
+   sequenceNumber leaves and augments [RFC9196] to add a system level
+   capability.
 
 module: ietf-notification-sequencing
 
-  augment-structure /inotif:notification:
-    +-- sysName                  inet:host
-    +-- sequenceNumber           yang:counter32
-
-  augment /sysc:system-capabilities:
+  augment /sysc:system-capabilities/notc:subscription-capabilities:
     +--ro sysname-sequence-supported?   notification-support {sysname-sequence}?
+
+  augment-structure /inotif:notification:
+    +-- sysName           inet:host
+    +-- sequenceNumber    yang:counter32
 
 3.2.  Full Tree View
 
-   The following is the YANG tree diagram [RFC8340] for the ietf-
-   notification-sequencing augmentation within the ietf-notification.
-
+   The following is the YANG tree diagram [RFC8340] for the "ietf-
+   notification-sequencing" augmentation within the "ietf-notification"
+   YANG module.
 
 
 
@@ -235,7 +235,7 @@ Internet-Draft        YANG Notifications Sequencing             May 2024
 
 3.3.  YANG Module
 
-   <CODE BEGINS> file "ietf-notification-sequencing@2023-05-28.yang"
+   <CODE BEGINS> file "ietf-notification-sequencing@2023-05-29.yang"
    module ietf-notification-sequencing {
      yang-version 1.1;
      namespace
@@ -298,7 +298,7 @@ Internet-Draft        YANG Notifications Sequencing             May 2024
        "Defines NETCONF Event Notification structure with the sysName and
        the sequenceNumber.
 
-       Copyright (c) 2023 IETF Trust and the persons identified as
+       Copyright (c) 2024 IETF Trust and the persons identified as
        authors of the code.  All rights reserved.
 
        Redistribution and use in source and binary forms, with or without
@@ -310,26 +310,26 @@ Internet-Draft        YANG Notifications Sequencing             May 2024
        This version of this YANG module is part of RFC XXXX; see the RFC
        itself for full legal notices.";
 
-     revision 2023-05-28 {
+     revision 2023-05-29 {
        description
          "First revision";
        reference
          "RFC XXXX: YANG Notifications Sequencing";
      }
+
      feature sysname-sequence {
        description
-         "This feature indicates that sysName and sequenceNumber are supported
-         in notifications.";
+         "This feature indicates that sysName and sequenceNumber are
+         supported in notifications.";
      }
-     grouping sysname-sequence-notification-capabilities {
-       description
-         "Capabilities related to YANG-Push notifications";
-         leaf sysname-sequence-supported {
-           if-feature "sysname-sequence";
-           type notc:notification-support;
+
+     typedef notification-support {
+       type bits {
+         bit config-changes {
            description
-             "Specifies whether the publisher supports sysName and
-             sequenceNumber in notifications.";
+             "The publisher is capable of sending
+             notifications for 'config true' nodes for the
+             relevant scope and subscription type.";
 
 
 
@@ -338,16 +338,46 @@ Graf, et al.            Expires 29 November 2024                [Page 6]
 Internet-Draft        YANG Notifications Sequencing             May 2024
 
 
+         }
+         bit state-changes {
+           description
+             "The publisher is capable of sending
+             notifications for 'config false' nodes for the
+             relevant scope and subscription type.";
+         }
        }
+       description
+         "Redefition of the type 'notification-support' from
+         'ietf-notification-capabilitie' module to be reusable in
+         other YANG modules.
+
+         Type for defining whether 'on-change' or
+         'periodic' notifications are supported for all data nodes,
+         'config false' data nodes, 'config true' data nodes, or
+         no data nodes.
+
+         The bits config-changes or state-changes have no effect
+         when they are set for a datastore or for a set of nodes
+         that does not contain nodes with the indicated config
+         value.  In those cases, the effect is the same as if no
+         support was declared.  One example of this is indicating
+         support for state-changes for a candidate datastore that
+         has no effect.";
+       reference
+         "RFC XXXX: YANG Notifications Sequencing
+         RFC 9196: YANG Modules Describing Capabilities for
+         Systems and Datastore Update Notifications";
      }
+
      sx:augment-structure "/inotif:notification" {
        leaf sysName {
          type inet:host;
          mandatory true;
          description
-           "Fully-qualified domain name of the node according to [RFC1213].
-           This value is usually configured on the node by the administrator
-           to uniquely identify the node in the network.";
+           "Fully-qualified domain name of the node according to
+           [RFC1213]. This value is usually configured on the node
+           by the administrator to uniquely identify the node in
+           the network.";
        }
        leaf sequenceNumber {
          type yang:counter32;
@@ -356,11 +386,28 @@ Internet-Draft        YANG Notifications Sequencing             May 2024
            "Unique sequence number as described in [RFC3339] for each
            published message.";
        }
+
+
+
+Graf, et al.            Expires 29 November 2024                [Page 7]
+
+Internet-Draft        YANG Notifications Sequencing             May 2024
+
+
      }
-     augment "/sysc:system-capabilities" {
+
+     augment "/sysc:system-capabilities/notc:subscription-capabilities" {
        description
          "Add system level capabilities";
-       uses sysname-sequence-notification-capabilities;
+       leaf sysname-sequence-supported {
+         if-feature "sysname-sequence";
+         type notification-support;
+         description
+           "Specifies whether the publisher supports exporting a
+           sysName and a sequenceNumber in notifications.";
+         reference
+           "RFC XXXX: YANG Notifications Sequencing";
+       }
      }
    }
    <CODE ENDS>
@@ -383,17 +430,6 @@ Internet-Draft        YANG Notifications Sequencing             May 2024
 
 6.  IANA Considerations
 
-
-
-
-
-
-
-Graf, et al.            Expires 29 November 2024                [Page 7]
-
-Internet-Draft        YANG Notifications Sequencing             May 2024
-
-
 6.1.  IETF XML Registry
 
    This document registers the following URIs in the "IETF XML Registry"
@@ -402,6 +438,17 @@ Internet-Draft        YANG Notifications Sequencing             May 2024
      URI: urn:ietf:params:xml:ns:yang:ietf-notification-sequencing
      Registrant Contact: The IESG.
      XML: N/A; the requested URI is an XML namespace.
+
+
+
+
+
+
+
+Graf, et al.            Expires 29 November 2024                [Page 8]
+
+Internet-Draft        YANG Notifications Sequencing             May 2024
+
 
 6.2.  YANG Module Name
 
@@ -439,17 +486,6 @@ Internet-Draft        YANG Notifications Sequencing             May 2024
               January 2024, <https://datatracker.ietf.org/doc/html/
               draft-ahuang-netconf-notif-yang-04>.
 
-
-
-
-
-
-
-Graf, et al.            Expires 29 November 2024                [Page 8]
-
-Internet-Draft        YANG Notifications Sequencing             May 2024
-
-
    [RFC1213]  McCloghrie, K. and M. Rose, "Management Information Base
               for Network Management of TCP/IP-based internets: MIB-II",
               STD 17, RFC 1213, DOI 10.17487/RFC1213, March 1991,
@@ -462,6 +498,13 @@ Internet-Draft        YANG Notifications Sequencing             May 2024
    [RFC5277]  Chisholm, S. and H. Trevino, "NETCONF Event
               Notifications", RFC 5277, DOI 10.17487/RFC5277, July 2008,
               <https://www.rfc-editor.org/info/rfc5277>.
+
+
+
+Graf, et al.            Expires 29 November 2024                [Page 9]
+
+Internet-Draft        YANG Notifications Sequencing             May 2024
+
 
    [RFC6020]  Bjorklund, M., Ed., "YANG - A Data Modeling Language for
               the Network Configuration Protocol (NETCONF)", RFC 6020,
@@ -498,14 +541,6 @@ Internet-Draft        YANG Notifications Sequencing             May 2024
               <https://datatracker.ietf.org/doc/html/draft-ietf-netconf-
               udp-notif-12>.
 
-
-
-
-Graf, et al.            Expires 29 November 2024                [Page 9]
-
-Internet-Draft        YANG Notifications Sequencing             May 2024
-
-
    [RFC6470]  Bierman, A., "Network Configuration Protocol (NETCONF)
               Base Notifications", RFC 6470, DOI 10.17487/RFC6470,
               February 2012, <https://www.rfc-editor.org/info/rfc6470>.
@@ -514,6 +549,18 @@ Internet-Draft        YANG Notifications Sequencing             May 2024
               Monitoring Protocol (BMP)", RFC 7854,
               DOI 10.17487/RFC7854, June 2016,
               <https://www.rfc-editor.org/info/rfc7854>.
+
+
+
+
+
+
+
+
+Graf, et al.            Expires 29 November 2024               [Page 10]
+
+Internet-Draft        YANG Notifications Sequencing             May 2024
+
 
    [RFC8640]  Voit, E., Clemm, A., Gonzalez Prieto, A., Nilsen-Nygaard,
               E., and A. Tripathy, "Dynamic Subscription to YANG Events
@@ -557,4 +604,13 @@ Authors' Addresses
 
 
 
-Graf, et al.            Expires 29 November 2024               [Page 10]
+
+
+
+
+
+
+
+
+
+Graf, et al.            Expires 29 November 2024               [Page 11]

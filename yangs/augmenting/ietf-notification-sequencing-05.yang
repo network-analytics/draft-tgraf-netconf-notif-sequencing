@@ -50,9 +50,9 @@ module ietf-notification-sequencing {
 
   description
     "Defines NETCONF Event Notification structure with the sysName and
-    the sequenceNumber.
+    the sequenceNumber. 
 
-    Copyright (c) 2023 IETF Trust and the persons identified as
+    Copyright (c) 2024 IETF Trust and the persons identified as
     authors of the code.  All rights reserved.
 
     Redistribution and use in source and binary forms, with or without
@@ -64,36 +64,66 @@ module ietf-notification-sequencing {
     This version of this YANG module is part of RFC XXXX; see the RFC
     itself for full legal notices.";
 
-  revision 2023-05-28 {
+  revision 2023-05-29 {
     description
       "First revision";
     reference
       "RFC XXXX: YANG Notifications Sequencing";
   }
+
   feature sysname-sequence {
     description
-      "This feature indicates that sysName and sequenceNumber are supported
-      in notifications.";
+      "This feature indicates that sysName and sequenceNumber are
+      supported in notifications.";
   }
-  grouping sysname-sequence-notification-capabilities {
-    description
-      "Capabilities related to YANG-Push notifications";
-      leaf sysname-sequence-supported {
-        if-feature "sysname-sequence";
-        type notc:notification-support;
+
+  typedef notification-support {
+    type bits {
+      bit config-changes {
         description
-          "Specifies whether the publisher supports sysName and 
-          sequenceNumber in notifications.";
+          "The publisher is capable of sending
+          notifications for 'config true' nodes for the
+          relevant scope and subscription type.";
+      }
+      bit state-changes {
+        description
+          "The publisher is capable of sending
+          notifications for 'config false' nodes for the
+          relevant scope and subscription type.";
+      }
     }
+    description
+      "Redefition of the type 'notification-support' from 
+      'ietf-notification-capabilitie' module to be reusable in
+      other YANG modules.
+
+      Type for defining whether 'on-change' or
+      'periodic' notifications are supported for all data nodes,
+      'config false' data nodes, 'config true' data nodes, or
+      no data nodes.
+
+      The bits config-changes or state-changes have no effect
+      when they are set for a datastore or for a set of nodes
+      that does not contain nodes with the indicated config
+      value.  In those cases, the effect is the same as if no
+      support was declared.  One example of this is indicating
+      support for state-changes for a candidate datastore that
+      has no effect.";
+    reference
+      "RFC XXXX: YANG Notifications Sequencing
+      RFC 9196: YANG Modules Describing Capabilities for
+      Systems and Datastore Update Notifications";
   }
+
   sx:augment-structure "/inotif:notification" {
     leaf sysName {
       type inet:host;
       mandatory true;
       description
-        "Fully-qualified domain name of the node according to [RFC1213]. 
-        This value is usually configured on the node by the administrator
-        to uniquely identify the node in the network.";
+        "Fully-qualified domain name of the node according to
+        [RFC1213]. This value is usually configured on the node
+        by the administrator to uniquely identify the node in
+        the network.";
     }
     leaf sequenceNumber {
       type yang:counter32;
@@ -103,9 +133,18 @@ module ietf-notification-sequencing {
         published message.";
     }
   }
-  augment "/sysc:system-capabilities" {
+
+  augment "/sysc:system-capabilities/notc:subscription-capabilities" {
     description
       "Add system level capabilities";
-    uses sysname-sequence-notification-capabilities;
+    leaf sysname-sequence-supported {
+      if-feature "sysname-sequence";
+      type notification-support;
+      description
+        "Specifies whether the publisher supports exporting a
+        sysName and a sequenceNumber in notifications.";
+      reference
+        "RFC XXXX: YANG Notifications Sequencing";
+    }
   }
 }
