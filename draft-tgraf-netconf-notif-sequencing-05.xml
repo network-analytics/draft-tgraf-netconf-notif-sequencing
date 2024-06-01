@@ -1,4 +1,5 @@
 <?xml version="1.0" encoding="US-ASCII"?>
+<!DOCTYPE rfc>
 <?rfc toc="yes"?>
 <?rfc tocompact="yes"?>
 <?rfc tocdepth="2"?>
@@ -9,9 +10,8 @@
 <?rfc inline="yes"?>
 <?rfc compact="yes"?>
 <?rfc subcompact="no"?>
-<rfc category="std" consensus="true"
-     docName="draft-tgraf-netconf-notif-sequencing-05" ipr="trust200902"
-     submissionType="IETF">
+<rfc category="std" docName="draft-tgraf-netconf-notif-sequencing-05"
+     ipr="trust200902" consensus="true" submissionType="IETF">
   <front>
     <title abbrev="YANG Notifications Sequencing">Support of Hostname and
     Sequencing in YANG Notifications</title>
@@ -68,7 +68,7 @@
       </address>
     </author>
 
-    <date day="01" month="June" year="2024"/>
+    <date day="28" month="May" year="2024"/>
 
     <abstract>
       <t>This document specifies a new YANG module that augment the NETCONF
@@ -82,29 +82,31 @@
 
   <middle>
     <section anchor="Introduction" title="Introduction">
+
       <t>NETCONF Event Notifications <xref target="RFC5277"/> and YANG-Push
       <xref target="RFC8641"/> allow NETCONF <xref target="RFC6241"/> servers
-      and YANG-Push publishers to send notifications to a data collection. In
-      the metadata of the event notification header, only the eventTime is
+      and YANG-Push publishers to send notifications to a data collection.
+      In the metadata of the event notification header, only the eventTime is
       present indicating at which time the notification message was published.
       For YANG-Push notifications, the subscription ID is added to the
-      "push-update" and "push-change-update" notification messages allowing
-      the YANG-Push receiver to map and recognize which Xpath or subtree is
-      bound to the subscription.</t>
+      "push-update" and "push-change-update" notification messages allowing the
+      YANG-Push receiver to map and recognize which Xpath or subtree is bound
+      to the subscription.</t>
 
       <t>When the NETCONF event notification message is forwarded from the
       receiver to another system, such as a messaging system or a time series
-      database, the transport context is lost since it is not part of the
-      NETCONF event notification message metadata. Therefore, the downstream
-      system is unable to associate the message to the publishing process (the
-      exporting router), nor able to detect message loss or reordering.</t>
+      database, the transport context is lost
+      since it is not part of the NETCONF event notification message metadata.
+      Therefore, the downstream system is unable to associate the message to
+      the publishing process (the exporting router), nor able to detect
+      message loss or reordering.</t>
 
       <t>To correlate network data among different Network Telemetry planes as
       described in Section 3.1 of <xref target="RFC9232"/> or among different
       YANG-Push subscription types as defined in Section 3.1 of <xref
-      target="RFC8641"/>, a reference to the node streaming the data is
-      needed. This is essential for understanding the timely relationship
-      among these different planes and YANG-Push subscription types.</t>
+      target="RFC8641"/>, a reference to the node streaming the data is needed.
+      This is essential for understanding the timely relationship among these
+      different planes and YANG-Push subscription types.</t>
 
       <t>Today, network operators workaround this impediment by preserving the
       transport source IP address and sequence numbers of the publishing
@@ -113,31 +115,30 @@
       readability of the message in the downstream system.</t>
 
       <t>On top of that, the transport source IP address might not represent
-      the management IP address by which the YANG-Push publisher should be
-      known. In other terms, the source-host <xref target="RFC6470"/>, which
-      is the "Address of the remote host for the session" might not be the
-      management IP address.</t>
+      the management IP address by which the YANG-Push publisher should be known.
+      In other terms, the source-host <xref target="RFC6470"/>, which is the
+      "Address of the remote host for the session" might not be the management
+      IP address.</t>
 
-      <t>To overcome these issues, this document proposes extending the YANG
-      notification header with a sysName, the node's fully-qualified domain
-      name, and a sequence number as described in <xref target="RFC9187"/>.
-      This allows the downstream system to not only be able to identify from
-      which network node, subscription, and time the message was published but
-      also, the order of the published messages.</t>
+      <t>To overcome these issues, this document proposes extending the YANG notification
+      header with a sysName, the node's fully-qualified domain name, and a sequence number
+      as described in <xref target="RFC9187"/>. This allows the downstream system to not only
+      be able to identify from which network node, subscription, and time the message was
+      published but also, the order of the published messages.</t>
+
     </section>
 
     <!-- <section title=""></section>
     <section title=""></section>
     <section title=""></section>
     <section title=""></section> -->
-
     <section anchor="Streaming-Update"
              title="Extend the YANG Notification Header">
-      <t>NETCONF Event Notifications <xref target="RFC5277"/> and YANG-Push
-      <xref target="RFC8641"/> uses the same notification header that is
-      described in Section 2.2.1 of <xref target="RFC5277"/>. <xref
-      target="I-D.ahuang-netconf-notif-yang"/> defines how these notifications
-      should be encoded in JSON and CBOR.</t>
+
+      <t>NETCONF Event Notifications <xref target="RFC5277"/> and YANG-Push <xref target="RFC8641"/>
+      uses the same notification header that is described in Section 2.2.1 of <xref
+      target="RFC5277"/>. <xref target="I-D.ahuang-netconf-notif-yang"/> 
+      defines how these notifications should be encoded in JSON and CBOR.</t>
 
       <t>Besides the eventTime described in Section 2.2.1 of <xref
       target="RFC5277"/> the following metadata objects are part of a
@@ -161,139 +162,200 @@
       </dl>
 
       <section title="Extension for NETCONF Event Notifications">
-        <t>The Notification of NETCONF Event Notifications <xref
-        target="RFC5277"/> uses a XML structure that is defined in Section
-        2.2.1 of <xref target="RFC5277"/>. <xref target="RFC5277"/> also
-        defines the capability
-        "urn:ietf:params:netconf:capability:notification:1.0" allowing a
-        NETCONF client to know that the NETCONF server supports sending
-        notifications.</t>
+        <t>The Notification of NETCONF Event Notifications <xref target="RFC5277"/>
+        uses a XML structure that is defined in Section 2.2.1 of <xref target="RFC5277"/>.
+        <xref target="RFC5277"/> also defines the capability
+        "urn:ietf:params:netconf:capability:notification:1.0" allowing a NETCONF
+        client to know that the NETCONF server supports sending notifications.
+        </t>
 
         <section title="Notification header">
-          <t>An implementation supporting this document extends the
-          notification defined in Section 2.2.1 of <xref target="RFC5277"/>
-          adding a sysName and a sequenceNumber. Two more child nodes within
-          the "notification" container are expected, representing the sysName
-          and the sequenceNumber.</t>
+          <t>An implementation supporting this document extends the notification defined
+          in Section 2.2.1 of <xref target="RFC5277"/> adding a sysName and a sequenceNumber.
+          Two more child nodes within the &quot;notification&quot; container are expected,
+          representing the sysName and the sequenceNumber.
+          </t>
 
-          <t>An example showing this extension in XML is provided in <xref
-          target="netconf_notification_message_example_xml_fig"/>:</t>
+          <t>An example showing this extension in XML is provided in 
+          <xref target="netconf_notification_message_example_xml_fig"/>: </t>
 
           <figure anchor="netconf_notification_message_example_xml_fig"
                   title="NETCONF Event Notification message">
-            <artwork><![CDATA[ <notification xmlns="urn:ietf:params:xml:ns:netconf:notification:1.0"> <eventTime>2007-07-08T00:10:00Z</eventTime> <sysName xmlns="urn:ietf:params:xml:ns:yang:ietf-notification-sequencing"> example-router </sysName> <sequenceNumber xmlns="urn:ietf:params:xml:ns:yang:ietf-notification-sequencing"> 187653 </sequenceNumber> <event xmlns="http://example.com/event/1.0"> <eventClass>state</eventClass> <reportingEntity> <card>Ethernet0</card> </reportingEntity> <operState>enabled</operState> </event> </notification> ]]></artwork>
+            <artwork><![CDATA[
+<notification xmlns="urn:ietf:params:xml:ns:netconf:notification:1.0">
+  <eventTime>2007-07-08T00:10:00Z</eventTime>
+  <sysName xmlns="urn:ietf:params:xml:ns:yang:ietf-notification-sequencing">
+    example-router
+  </sysName>
+  <sequenceNumber xmlns="urn:ietf:params:xml:ns:yang:ietf-notification-sequencing">
+    187653
+  </sequenceNumber>
+  <event xmlns="http://example.com/event/1.0">
+      <eventClass>state</eventClass>
+      <reportingEntity>
+          <card>Ethernet0</card>
+      </reportingEntity>
+      <operState>enabled</operState>
+  </event>
+</notification>
+            ]]></artwork>
           </figure>
         </section>
-
         <section title="Capability exchange">
-          <t>This document also adds a new capability to NETCONF so that the
-          NETCONF server can notify the support of the sysName and
-          sequenceNumber to the NETCONF client.</t>
+          <t>This document also adds a new capability to NETCONF so that 
+          the NETCONF server can notify the support of the sysName and sequenceNumber
+          to the NETCONF client.</t>
 
-          <t>When the NETCONF server supports this document, the following
-          capability is used:</t>
+          <t>When the NETCONF server supports this document, the following capability is used:</t>
+          <artwork align="left"><![CDATA[
+  urn:ietf:params:xml:ns:netconf:notification:2.0
+        ]]></artwork>
 
-          <artwork align="left"><![CDATA[ urn:ietf:params:xml:ns:netconf:notification:2.0 ]]></artwork>
-
-          <t>The capability identifier is requested to IANA in Section
-          XXX.</t>
-
-          <t>In the capability exchange between the NETCONF client and server,
-          the server will announce this capability along with the supported
-          capabilities by the server as shown in the example in <xref
-          target="capab_exchange"/>.</t>
-
+          <t>The capability identifier is requested to IANA in Section XXX.</t>
+          
+          <t>In the capability exchange between the NETCONF client and server, the server will
+          announce this capability along with the supported capabilities by the server as shown
+          in the example in <xref target="capab_exchange"/>.</t>
+          
           <figure anchor="capab_exchange"
                   title="Example of a capability exchange.">
-            <artwork><![CDATA[ <hello xmlns="urn:ietf:params:xml:ns:netconf:base:1.0"> <capabilities> <capability> urn:ietf:params:xml:ns:netconf:base:1.0 </capability> <capability> urn:ietf:params:netconf:capability:startup:1.0 </capability> <capability> urn:ietf:params:netconf:capability:notification:2.0 </capability> </capabilities> <session-id>4</session-id> </hello> ]]></artwork>
+            <artwork><![CDATA[
+<hello xmlns="urn:ietf:params:xml:ns:netconf:base:1.0">
+  <capabilities>
+    <capability>
+        urn:ietf:params:xml:ns:netconf:base:1.0
+      </capability>
+      <capability>
+        urn:ietf:params:netconf:capability:startup:1.0
+      </capability>
+      <capability>
+        urn:ietf:params:netconf:capability:notification:2.0
+      </capability>
+    </capabilities>
+  <session-id>4</session-id>
+</hello>        
+            ]]></artwork>
           </figure>
         </section>
       </section>
 
       <section title="Extension for YANG-Push">
-        <t>YANG-Push <xref target="RFC8641"/> uses the same structure defined
-        in <xref target="RFC5277"/>. <xref target="RFC5277"/> defines the
-        structure using XML encoding. For other YANG encodings, <xref
-        target="I-D.ahuang-netconf-notif-yang"/> describes how notifications
+        <t>YANG-Push <xref target="RFC8641"/> uses the same structure defined in
+        <xref target="RFC5277"/>. <xref target="RFC5277"/> defines the 
+        structure using XML encoding. For other YANG encodings,
+        <xref target="I-D.ahuang-netconf-notif-yang"/> describes how notifications 
         should be encoded in JSON and CBOR.</t>
 
         <section title="YANG-Push Notification header">
-          <t>An implementation supporting this document extends the
-          notification defined in Section 4 of <xref
-          target="I-D.ahuang-netconf-notif-yang"/> adding a sysName and a
-          sequenceNumber. Two more child nodes within the "notification" root
-          container are expected, representing the sysName and the
-          sequenceNumber.</t>
+          <t>An implementation supporting this document extends the notification defined
+          in Section 4 of <xref target="I-D.ahuang-netconf-notif-yang"/> adding a
+          sysName and a sequenceNumber. Two more child nodes within the
+          &quot;notification&quot; root container are expected, representing the
+          sysName and the sequenceNumber.</t>
 
           <t><xref target="notification_message_example_xml_fig"/> provides an
           example of a "push-update" notification with the sysName and
-          sequenceNumber. This examples is encoded in XML <xref
-          target="W3C.REC-xml-20081126"/>.</t>
+          sequenceNumber. This examples is encoded in XML <xref target="W3C.REC-xml-20081126"/>.</t>
 
           <figure anchor="notification_message_example_xml_fig"
                   title="YANG-Push Notification example encoded in XML">
-            <sourcecode type="xml">&lt;notification
-            xmlns="urn:ietf:params:xml:ns:netconf:notification:1.0"&gt;
-            &lt;eventTime&gt;2023-02-04T16:30:11.22Z&lt;/eventTime&gt;
-            &lt;sysName
-            xmlns="urn:ietf:params:xml:ns:yang:ietf-notification-sequencing"&gt;
-            example-router &lt;/sysName&gt; &lt;sequenceNumber
-            xmlns="urn:ietf:params:xml:ns:yang:ietf-notification-sequencing"&gt;
-            187653 &lt;/sequenceNumber&gt; &lt;push-update
-            xmlns="urn:ietf:params:xml:ns:yang:ietf-yang-push"&gt;
-            &lt;id&gt;1011&lt;/id&gt; &lt;datastore-contents&gt;
-            &lt;interfaces
-            xmlns="urn:ietf:params:xml:ns:yang:ietf-interfaces"&gt;
-            &lt;interface&gt; &lt;name&gt;eth0&lt;/name&gt;
-            &lt;oper-status&gt;up&lt;/oper-status&gt; &lt;/interface&gt;
-            &lt;/interfaces&gt; &lt;/datastore-contents&gt;
-            &lt;/push-update&gt; &lt;/notification&gt;</sourcecode>
+            <sourcecode type="xml"><![CDATA[
+<notification xmlns="urn:ietf:params:xml:ns:netconf:notification:1.0">
+  <eventTime>2023-02-04T16:30:11.22Z</eventTime>
+  <sysName xmlns="urn:ietf:params:xml:ns:yang:ietf-notification-sequencing">
+    example-router
+  </sysName>
+  <sequenceNumber xmlns="urn:ietf:params:xml:ns:yang:ietf-notification-sequencing">
+    187653
+  </sequenceNumber>
+  <push-update xmlns="urn:ietf:params:xml:ns:yang:ietf-yang-push">
+    <id>1011</id>
+    <datastore-contents>
+        <interfaces xmlns="urn:ietf:params:xml:ns:yang:ietf-interfaces">
+        <interface>
+          <name>eth0</name>
+          <oper-status>up</oper-status>
+        </interface>
+      </interfaces>
+    </datastore-contents>
+  </push-update>
+</notification>        
+            ]]></sourcecode>
           </figure>
 
-          <t>When the notifcation is encoded using JSON <xref
-          target="RFC7951"/>, the sysName and the sequenceNumber are encoded
-          at root container. An example is shown in <xref
-          target="yang_push_json"/>.</t>
+          <t>When the notifcation is encoded using JSON <xref target="RFC7951"/>, the 
+          sysName and the sequenceNumber are encoded at root container. An example is shown
+          in <xref target="yang_push_json"/>.</t>
 
           <figure anchor="yang_push_json"
-                  title="YANG-Push Notification example encoded in JSON">
-            <sourcecode type="json">{ "ietf-notification:notification": {
-            "eventTime": "2023-02-10T08:00:11.22Z",
-            "sysName":"example-router", "sequenceNumber": 187653,
-            "ietf-yang-push:push-update": { "id": 1011, "datastore-contents":
-            { "ietf-interfaces:interfaces": [ { "interface": { "name": "eth0",
-            "oper-status": "up" } } ] } } } }</sourcecode>
+                title="YANG-Push Notification example encoded in JSON">
+                <sourcecode type="json"><![CDATA[
+{
+    "ietf-notification:notification": {
+        "eventTime": "2023-02-10T08:00:11.22Z",
+        "sysName":"example-router",
+        "sequenceNumber": 187653,
+        "ietf-yang-push:push-update": {
+            "id": 1011,
+            "datastore-contents": {
+                "ietf-interfaces:interfaces": [
+                    {
+                        "interface": {
+                            "name": "eth0",
+                            "oper-status": "up"
+                        }
+                    }
+                ]
+            }
+        }
+    }
+}
+      ]]></sourcecode>
           </figure>
 
-          <t>When the notification is encoded in CBOR <xref
-          target="RFC9254"/>, the sysName and the sequenceNumber are encoded
-          at root container. An example is shown in <xref
-          target="yang_push_cbor"/> using CBOR diagnostic notation in section
+          <t>When the notification is encoded in CBOR <xref target="RFC9254"/>, the 
+          sysName and the sequenceNumber are encoded at root container. An example is shown
+          in <xref target="yang_push_cbor"/> using CBOR diagnostic notation in section
           3.1 of <xref target="RFC9254"/>.</t>
 
           <figure anchor="yang_push_cbor"
-                  title="YANG-Push Notification example in CBOR diagnostic notation.">
-            <sourcecode type="cbor-diag">{ "ietf-notification:notification": {
-            "eventTime": "2023-02-10T08:00:11.22Z",
-            "sysName":"example-router", "sequenceNumber": 187653,
-            "ietf-yang-push:push-update": { "id": 1011, "datastore-contents":
-            { "ietf-interfaces:interfaces": [ { "interface": { "name": "eth0",
-            "oper-status": "up" } } ] } } } }</sourcecode>
+                title="YANG-Push Notification example in CBOR diagnostic notation.">
+                <sourcecode type="cbor-diag"><![CDATA[
+{
+    "ietf-notification:notification": {
+        "eventTime": "2023-02-10T08:00:11.22Z",
+        "sysName":"example-router",
+        "sequenceNumber": 187653,
+        "ietf-yang-push:push-update": {
+            "id": 1011,
+            "datastore-contents": {
+                "ietf-interfaces:interfaces": [
+                    {
+                        "interface": {
+                            "name": "eth0",
+                            "oper-status": "up"
+                        }
+                    }
+                ]
+            }
+        }
+    }
+}
+      ]]></sourcecode>
           </figure>
         </section>
 
         <section title="YANG-Push capabilities">
-          <t>YANG-related system capabilites can be discovered by subscribing
-          to the datastore defined in <xref target="RFC9196"/>. This document
-          augments the "ietf-notification-capabilities" defined in Section 5
-          of <xref target="RFC9196"/> so that the YANG-Push receiver can learn
-          the capabilities defined in this documents throught the
-          datastore.</t>
+          <t>YANG-related system capabilites can be discovered by subscribing to 
+          the datastore defined in <xref target="RFC9196"/>. This document augments the
+          "ietf-notification-capabilities" defined in Section 5 of <xref target="RFC9196"/>
+          so that the YANG-Push receiver can learn the capabilities defined in this
+          documents throught the datastore.</t>
 
-          <t>The definition of this YANG augmentation is specified in <xref
-          target="yang-model"/>.</t>
+          <t>The definition of this YANG augmentation is specified in <xref target="yang-model"/>.</t>
         </section>
       </section>
+
     </section>
 
     <section anchor="yang-model" title="YANG Module for Event Notifications">
@@ -302,14 +364,20 @@
         "ietf-notification" YANG module specified in Section 5 of <xref
         target="I-D.ahuang-netconf-notif-yang"/> adding the sysName and the
         sequenceNumber leaves and augments "ietf-notification-capabilities"
-        defined in <xref target="RFC9196"/> to add a system level
-        capability.</t>
+        defined in <xref target="RFC9196"/> to add a system level capability.</t>
 
-        <t>
-          <figure>
-            <artwork align="left"><![CDATA[ module: ietf-notification-sequencing augment /sysc:system-capabilities/notc:subscription-capabilities: +--ro sysname-sequence-supported? notification-support {sysname-sequence}? augment-structure /inotif:notification: +-- sysName inet:host +-- sequenceNumber yang:counter32 ]]></artwork>
-          </figure>
-        </t>
+        <t><figure>
+            <artwork align="left"><![CDATA[
+module: ietf-notification-sequencing
+
+  augment /sysc:system-capabilities/notc:subscription-capabilities:
+    +--ro sysname-sequence-supported?   notification-support {sysname-sequence}?
+
+  augment-structure /inotif:notification:
+    +-- sysName           inet:host
+    +-- sequenceNumber    yang:counter32
+]]></artwork>
+          </figure></t>
       </section>
 
       <section anchor="yang-full-tree" title="Full Tree View">
@@ -317,24 +385,226 @@
         the "ietf-notification" structure:</t>
 
         <figure>
-          <artwork align="left"><![CDATA[ module: ietf-notification structure notification: +-- eventTime yang:date-and-time +-- inotifseq:sysName inet:host +-- inotifseq:sequenceNumber yang:counter32 ]]></artwork>
-        </figure>
+            <artwork align="left"><![CDATA[
+module: ietf-notification
 
-        <t>The following YANG tree diagram <xref target="RFC8340"/> is the
-        full tree of the "ietf-notification-capabilities" YANG model:</t>
+  structure notification:
+    +-- eventTime                          yang:date-and-time
+    +-- inotifseq:sysName                  inet:host
+    +-- inotifseq:sequenceNumber           yang:counter32
+]]></artwork>
+          </figure>
 
-        <figure>
-          <artwork align="left"><![CDATA[ module: ietf-system-capabilities +--ro system-capabilities +--ro datastore-capabilities* [datastore] | +--ro datastore | | -> /yanglib:yang-library/datastore/name | +--ro per-node-capabilities* [] | +--ro (node-selection)? | | +--:(node-selector) | | +--ro node-selector? | | nacm:node-instance-identifier | +--ro notc:subscription-capabilities | +--ro notc:max-nodes-per-update? uint32 | +--ro notc:periodic-notifications-supported? | | notification-support | +--ro (notc:update-period)? | | +--:(notc:minimum-update-period) | | | +--ro notc:minimum-update-period? uint32 | | +--:(notc:supported-update-period) | | +--ro notc:supported-update-period* uint32 | +--ro notc:on-change-supported? | | notification-support {yp:on-change}? | +--ro notc:minimum-dampening-period? uint32 | | {yp:on-change}? | +--ro notc:supported-excluded-change-type* union | {yp:on-change}? +--ro notc:subscription-capabilities +--ro notc:max-nodes-per-update? uint32 +--ro notc:periodic-notifications-supported? | notification-support +--ro (notc:update-period)? | +--:(notc:minimum-update-period) | | +--ro notc:minimum-update-period? uint32 | +--:(notc:supported-update-period) | +--ro notc:supported-update-period* uint32 +--ro notc:on-change-supported? | notification-support {yp:on-change}? +--ro notc:minimum-dampening-period? uint32 | {yp:on-change}? +--ro notc:supported-excluded-change-type* union | {yp:on-change}? +--ro inotifseq:sysname-sequence-supported? notification-support {sysname-sequence}? ]]></artwork>
-        </figure>
+          <t>The following YANG tree diagram <xref target="RFC8340"/> is the full tree
+          of the "ietf-notification-capabilities" YANG model:</t>
+
+          <figure>
+            <artwork align="left"><![CDATA[
+module: ietf-system-capabilities
+  +--ro system-capabilities
+     +--ro datastore-capabilities* [datastore]
+     |  +--ro datastore
+     |  |       -> /yanglib:yang-library/datastore/name
+     |  +--ro per-node-capabilities* []
+     |     +--ro (node-selection)?
+     |     |  +--:(node-selector)
+     |     |     +--ro node-selector?
+     |     |             nacm:node-instance-identifier
+     |     +--ro notc:subscription-capabilities
+     |        +--ro notc:max-nodes-per-update?               uint32
+     |        +--ro notc:periodic-notifications-supported?
+     |        |       notification-support
+     |        +--ro (notc:update-period)?
+     |        |  +--:(notc:minimum-update-period)
+     |        |  |  +--ro notc:minimum-update-period?        uint32
+     |        |  +--:(notc:supported-update-period)
+     |        |     +--ro notc:supported-update-period*      uint32
+     |        +--ro notc:on-change-supported?
+     |        |       notification-support {yp:on-change}?
+     |        +--ro notc:minimum-dampening-period?           uint32
+     |        |       {yp:on-change}?
+     |        +--ro notc:supported-excluded-change-type*     union
+     |                {yp:on-change}?
+     +--ro notc:subscription-capabilities
+        +--ro notc:max-nodes-per-update?               uint32
+        +--ro notc:periodic-notifications-supported?
+        |       notification-support
+        +--ro (notc:update-period)?
+        |  +--:(notc:minimum-update-period)
+        |  |  +--ro notc:minimum-update-period?        uint32
+        |  +--:(notc:supported-update-period)
+        |     +--ro notc:supported-update-period*      uint32
+        +--ro notc:on-change-supported?
+        |       notification-support {yp:on-change}?
+        +--ro notc:minimum-dampening-period?           uint32
+        |       {yp:on-change}?
+        +--ro notc:supported-excluded-change-type*     union
+        |       {yp:on-change}?
+        +--ro inotifseq:sysname-sequence-supported?
+                notification-support {sysname-sequence}?
+]]></artwork>
+          </figure>
       </section>
 
       <section anchor="yang-module" title="YANG Module">
-        <t>The "ietf-notification-sequencing" augments the "ietf-notification"
-        and "ietf-notification-capabilities" YANG modules.</t>
+        <t>The "ietf-notification-sequencing" augments the "ietf-notification" and
+        "ietf-notification-capabilities" YANG modules.</t>
 
         <figure>
-          <artwork align="left"><![CDATA[ <CODE BEGINS> file "ietf-notification-sequencing@2023-05-29.yang" module ietf-notification-sequencing { yang-version 1.1; namespace "urn:ietf:params:xml:ns:yang:ietf-notification-sequencing"; prefix inotifseq; import ietf-inet-types { prefix inet; reference "RFC 6991: Common YANG Data Types"; } import ietf-yang-types { prefix yang; reference "RFC 6991: Common YANG Data Types"; } import ietf-notification { prefix inotif; reference "draft-ahuang-netconf-notif-yang: NETCONF Event Notification YANG"; } import ietf-system-capabilities { prefix sysc; reference "RFC 9196: YANG Modules Describing Capabilities for Systems and Datastore Update Notifications"; } import ietf-notification-capabilities { prefix notc; reference "RFC 9196: YANG Modules Describing Capabilities for Systems and Datastore Update Notifications"; } import ietf-yang-structure-ext { prefix sx; reference "RFC 8791: YANG Data Structure Extensions"; } organization "IETF NETCONF (Network Configuration) Working Group"; contact "WG Web: <http:/tools.ietf.org/wg/netconf/> WG List: <mailto:netconf@ietf.org> Authors: Thomas Graf <mailto:thomas.graf@swisscom.com> Jean Quilbeuf <mailto:jean.quilbeuf@huawei.com> Alex Huang Feng <mailto:alex.huang-feng@insa-lyon.fr>"; description "Defines NETCONF Event Notification structure with the sysName and the sequenceNumber. Copyright (c) 2024 IETF Trust and the persons identified as authors of the code. All rights reserved. Redistribution and use in source and binary forms, with or without modification, is permitted pursuant to, and subject to the license terms contained in, the Revised BSD License set forth in Section 4.c of the IETF Trust's Legal Provisions Relating to IETF Documents (https://trustee.ietf.org/license-info). This version of this YANG module is part of RFC XXXX; see the RFC itself for full legal notices."; revision 2023-05-29 { description "First revision"; reference "RFC XXXX: YANG Notifications Sequencing"; } feature sysname-sequence { description "This feature indicates that sysName and sequenceNumber are supported in notifications."; } typedef notification-support { type bits { bit config-changes { description "The publisher is capable of sending notifications for 'config true' nodes for the relevant scope and subscription type."; } bit state-changes { description "The publisher is capable of sending notifications for 'config false' nodes for the relevant scope and subscription type."; } } description "Redefition of the type 'notification-support' from 'ietf-notification-capabilities' module to be reusable in other YANG modules. Type for defining whether 'on-change' or 'periodic' notifications are supported for all data nodes, 'config false' data nodes, 'config true' data nodes, or no data nodes. The bits config-changes or state-changes have no effect when they are set for a datastore or for a set of nodes that does not contain nodes with the indicated config value. In those cases, the effect is the same as if no support was declared. One example of this is indicating support for state-changes for a candidate datastore that has no effect."; reference "RFC XXXX: YANG Notifications Sequencing RFC 9196: YANG Modules Describing Capabilities for Systems and Datastore Update Notifications"; } sx:augment-structure "/inotif:notification" { leaf sysName { type inet:host; mandatory true; description "Fully-qualified domain name of the node according to [RFC1213]. This value is usually configured on the node by the administrator to uniquely identify the node in the network."; } leaf sequenceNumber { type yang:counter32; mandatory true; description "Unique sequence number as described in [RFC3339] for each published message."; } } augment "/sysc:system-capabilities/notc:subscription-capabilities" { description "Add system level capabilities"; leaf sysname-sequence-supported { if-feature "sysname-sequence"; type notification-support; description "Specifies whether the publisher supports exporting a sysName and a sequenceNumber in notifications."; reference "RFC XXXX: YANG Notifications Sequencing"; } } } <CODE ENDS>]]></artwork>
-        </figure>
+            <artwork align="left"><![CDATA[
+<CODE BEGINS> file "ietf-notification-sequencing@2023-05-29.yang"
+module ietf-notification-sequencing {
+  yang-version 1.1;
+  namespace
+    "urn:ietf:params:xml:ns:yang:ietf-notification-sequencing";
+  prefix inotifseq;
+  import ietf-inet-types {
+    prefix inet;
+    reference
+      "RFC 6991: Common YANG Data Types";
+  }
+  import ietf-yang-types {
+    prefix yang;
+    reference
+      "RFC 6991: Common YANG Data Types";
+  }
+  import ietf-notification {
+    prefix inotif;
+    reference
+      "draft-ahuang-netconf-notif-yang: NETCONF Event Notification YANG";
+  }
+  import ietf-system-capabilities {
+    prefix sysc;
+    reference
+      "RFC 9196: YANG Modules Describing Capabilities for
+       Systems and Datastore Update Notifications";
+  }
+  import ietf-notification-capabilities {
+    prefix notc;
+    reference
+      "RFC 9196: YANG Modules Describing Capabilities for
+       Systems and Datastore Update Notifications";
+  }
+  import ietf-yang-structure-ext {
+    prefix sx;
+    reference
+      "RFC 8791: YANG Data Structure Extensions";
+  }
+
+  organization "IETF NETCONF (Network Configuration) Working Group";
+  contact
+    "WG Web:   <http:/tools.ietf.org/wg/netconf/>
+     WG List:  <mailto:netconf@ietf.org>
+
+     Authors:  Thomas Graf
+               <mailto:thomas.graf@swisscom.com>
+               Jean Quilbeuf
+               <mailto:jean.quilbeuf@huawei.com>
+               Alex Huang Feng
+               <mailto:alex.huang-feng@insa-lyon.fr>";
+
+  description
+    "Defines NETCONF Event Notification structure with the sysName and
+    the sequenceNumber. 
+
+    Copyright (c) 2024 IETF Trust and the persons identified as
+    authors of the code.  All rights reserved.
+
+    Redistribution and use in source and binary forms, with or without
+    modification, is permitted pursuant to, and subject to the license
+    terms contained in, the Revised BSD License set forth in Section
+    4.c of the IETF Trust's Legal Provisions Relating to IETF Documents
+    (https://trustee.ietf.org/license-info).
+
+    This version of this YANG module is part of RFC XXXX; see the RFC
+    itself for full legal notices.";
+
+  revision 2023-05-29 {
+    description
+      "First revision";
+    reference
+      "RFC XXXX: YANG Notifications Sequencing";
+  }
+
+  feature sysname-sequence {
+    description
+      "This feature indicates that sysName and sequenceNumber are
+      supported in notifications.";
+  }
+
+  typedef notification-support {
+    type bits {
+      bit config-changes {
+        description
+          "The publisher is capable of sending
+          notifications for 'config true' nodes for the
+          relevant scope and subscription type.";
+      }
+      bit state-changes {
+        description
+          "The publisher is capable of sending
+          notifications for 'config false' nodes for the
+          relevant scope and subscription type.";
+      }
+    }
+    description
+      "Redefition of the type 'notification-support' from 
+      'ietf-notification-capabilities' module to be reusable in
+      other YANG modules.
+
+      Type for defining whether 'on-change' or
+      'periodic' notifications are supported for all data nodes,
+      'config false' data nodes, 'config true' data nodes, or
+      no data nodes.
+
+      The bits config-changes or state-changes have no effect
+      when they are set for a datastore or for a set of nodes
+      that does not contain nodes with the indicated config
+      value.  In those cases, the effect is the same as if no
+      support was declared.  One example of this is indicating
+      support for state-changes for a candidate datastore that
+      has no effect.";
+    reference
+      "RFC XXXX: YANG Notifications Sequencing
+      RFC 9196: YANG Modules Describing Capabilities for
+      Systems and Datastore Update Notifications";
+  }
+
+  sx:augment-structure "/inotif:notification" {
+    leaf sysName {
+      type inet:host;
+      mandatory true;
+      description
+        "Fully-qualified domain name of the node according to
+        [RFC1213]. This value is usually configured on the node
+        by the administrator to uniquely identify the node in
+        the network.";
+    }
+    leaf sequenceNumber {
+      type yang:counter32;
+      mandatory true;
+      description
+        "Unique sequence number as described in [RFC3339] for each
+        published message.";
+    }
+  }
+
+  augment "/sysc:system-capabilities/notc:subscription-capabilities" {
+    description
+      "Add system level capabilities";
+    leaf sysname-sequence-supported {
+      if-feature "sysname-sequence";
+      type notification-support;
+      description
+        "Specifies whether the publisher supports exporting a
+        sysName and a sequenceNumber in notifications.";
+      reference
+        "RFC XXXX: YANG Notifications Sequencing";
+    }
+  }
+}
+<CODE ENDS>]]></artwork>
+          </figure>
       </section>
     </section>
 
@@ -344,8 +614,8 @@
 
       <section anchor="SIXWIND" title="6WIND VSR">
         <t>6WIND implemented this document for a YANG-Push publisher on <xref
-        target="I-D.ietf-netconf-udp-notif"> UDP-based Transport for
-        Configured Subscriptions</xref> in their VSR platform.</t>
+        target="I-D.ietf-netconf-udp-notif"> UDP-based Transport for Configured
+        Subscriptions</xref> in their VSR platform.</t>
       </section>
     </section>
 
@@ -360,11 +630,12 @@
         <t>This document registers the following URIs in the "IETF XML
         Registry" <xref target="RFC3688"/>:</t>
 
-        <t>
-          <figure>
-            <artwork align="left"><![CDATA[ URI: urn:ietf:params:xml:ns:yang:ietf-notification-sequencing Registrant Contact: The IESG. XML: N/A; the requested URI is an XML namespace.]]></artwork>
-          </figure>
-        </t>
+        <t><figure>
+            <artwork align="left"><![CDATA[
+  URI: urn:ietf:params:xml:ns:yang:ietf-notification-sequencing
+  Registrant Contact: The IESG.
+  XML: N/A; the requested URI is an XML namespace.]]></artwork>
+          </figure></t>
       </section>
 
       <section title="YANG Module Name">
@@ -372,17 +643,23 @@
         Module Names" registry <xref target="RFC6020"/>:</t>
 
         <figure>
-          <artwork align="left"><![CDATA[ name: ietf-notification-sequencing namespace: urn:ietf:params:xml:ns:yang:ietf-notification-sequencing prefix: inotifseq reference: RFC XXXX]]></artwork>
+            <artwork align="left"><![CDATA[
+  name: ietf-notification-sequencing
+  namespace: urn:ietf:params:xml:ns:yang:ietf-notification-sequencing
+  prefix: inotifseq
+  reference: RFC XXXX]]></artwork>
         </figure>
       </section>
 
       <section title="NETCONF Capability URNs Registry">
         <t>This document registers the following NETCONF capability in the
-        "Network Configuration Protocol (NETCONF) Capability URNs"
-        registry:</t>
+        "Network Configuration Protocol (NETCONF) Capability URNs" registry:</t>
 
         <figure>
-          <artwork align="left"><![CDATA[ Capability: :notification:2.0 Capability Identifier: urn:ietf:params:xml:ns:netconf:notification:2.0 Reference: RFC XXXX]]></artwork>
+            <artwork align="left"><![CDATA[
+  Capability: :notification:2.0
+  Capability Identifier: urn:ietf:params:xml:ns:netconf:notification:2.0
+  Reference: RFC XXXX]]></artwork>
         </figure>
       </section>
     </section>
@@ -407,25 +684,15 @@
   <back>
     <references title="Normative References">
       <?rfc include='https://xml.resource.org/public/rfc/bibxml/reference.RFC.1213.xml'?>
-
       <?rfc include='https://xml.resource.org/public/rfc/bibxml/reference.RFC.3688.xml'?>
-
       <?rfc include='https://xml.resource.org/public/rfc/bibxml/reference.RFC.5277.xml'?>
-
       <?rfc include='https://xml.resource.org/public/rfc/bibxml/reference.RFC.6020.xml'?>
-
       <?rfc include='https://xml.resource.org/public/rfc/bibxml/reference.RFC.6241.xml'?>
-
       <?rfc include='https://xml.resource.org/public/rfc/bibxml/reference.RFC.7951.xml'?>
-
       <?rfc include='https://xml.resource.org/public/rfc/bibxml/reference.RFC.8340.xml'?>
-
       <?rfc include='https://xml.resource.org/public/rfc/bibxml/reference.RFC.8641.xml'?>
-
       <?rfc include='https://xml.resource.org/public/rfc/bibxml/reference.RFC.9196.xml'?>
-
       <?rfc include='https://xml.resource.org/public/rfc/bibxml/reference.RFC.9187.xml'?>
-
       <?rfc include='https://xml.resource.org/public/rfc/bibxml/reference.RFC.9254.xml'?>
 
       <?rfc include='https://xml.resource.org/public/rfc/bibxml-ids/reference.I-D.ahuang-netconf-notif-yang.xml'?>
