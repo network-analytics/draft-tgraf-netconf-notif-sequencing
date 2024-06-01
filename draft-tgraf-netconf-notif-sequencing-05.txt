@@ -65,36 +65,39 @@ Internet-Draft        YANG Notifications Sequencing             May 2024
 Table of Contents
 
    1.  Introduction  . . . . . . . . . . . . . . . . . . . . . . . .   2
-   2.  Extend the NETCONF Event Notification Header  . . . . . . . .   3
-   3.  YANG Module for Event Notifications . . . . . . . . . . . . .   4
-     3.1.  YANG Tree Diagram . . . . . . . . . . . . . . . . . . . .   4
-     3.2.  Full Tree View  . . . . . . . . . . . . . . . . . . . . .   4
-     3.3.  YANG Module . . . . . . . . . . . . . . . . . . . . . . .   5
-   4.  Implementation Status . . . . . . . . . . . . . . . . . . . .   8
-     4.1.  6WIND VSR . . . . . . . . . . . . . . . . . . . . . . . .   8
-   5.  Security Considerations . . . . . . . . . . . . . . . . . . .   8
-   6.  IANA Considerations . . . . . . . . . . . . . . . . . . . . .   8
-     6.1.  IETF XML Registry . . . . . . . . . . . . . . . . . . . .   8
-     6.2.  YANG Module Name  . . . . . . . . . . . . . . . . . . . .   9
-   7.  Operational Considerations  . . . . . . . . . . . . . . . . .   9
-     7.1.  SysName Correlation . . . . . . . . . . . . . . . . . . .   9
-   8.  Acknowledgements  . . . . . . . . . . . . . . . . . . . . . .   9
-   9.  References  . . . . . . . . . . . . . . . . . . . . . . . . .   9
-     9.1.  Normative References  . . . . . . . . . . . . . . . . . .   9
-     9.2.  Informative References  . . . . . . . . . . . . . . . . .  10
-   Authors' Addresses  . . . . . . . . . . . . . . . . . . . . . . .  11
+   2.  Extend the YANG Notification Header . . . . . . . . . . . . .   3
+     2.1.  Extension for NETCONF Event Notifications . . . . . . . .   4
+     2.2.  Extension for YANG-Push . . . . . . . . . . . . . . . . .   5
+   3.  YANG Module for Event Notifications . . . . . . . . . . . . .   7
+     3.1.  YANG Tree Diagram . . . . . . . . . . . . . . . . . . . .   8
+     3.2.  Full Tree View  . . . . . . . . . . . . . . . . . . . . .   8
+     3.3.  YANG Module . . . . . . . . . . . . . . . . . . . . . . .   9
+   4.  Implementation Status . . . . . . . . . . . . . . . . . . . .  13
+     4.1.  6WIND VSR . . . . . . . . . . . . . . . . . . . . . . . .  13
+   5.  Security Considerations . . . . . . . . . . . . . . . . . . .  13
+   6.  IANA Considerations . . . . . . . . . . . . . . . . . . . . .  13
+     6.1.  IETF XML Registry . . . . . . . . . . . . . . . . . . . .  13
+     6.2.  YANG Module Name  . . . . . . . . . . . . . . . . . . . .  13
+     6.3.  NETCONF Capability URNs Registry  . . . . . . . . . . . .  14
+   7.  Operational Considerations  . . . . . . . . . . . . . . . . .  14
+     7.1.  SysName Correlation . . . . . . . . . . . . . . . . . . .  14
+   8.  Acknowledgements  . . . . . . . . . . . . . . . . . . . . . .  14
+   9.  References  . . . . . . . . . . . . . . . . . . . . . . . . .  14
+     9.1.  Normative References  . . . . . . . . . . . . . . . . . .  14
+     9.2.  Informative References  . . . . . . . . . . . . . . . . .  15
+   Authors' Addresses  . . . . . . . . . . . . . . . . . . . . . . .  16
 
 1.  Introduction
 
-   Section 4 of [RFC5277] describes the NETCONF event notification
-   header using a XML Schema.  In the metadata of the event notification
-   header, only the eventTime is present indicating at which time the
-   notification message was published.  For other encodings, the same
-   schema is implemented using a YANG module in
-   [I-D.ahuang-netconf-notif-yang].  Furthermore, in Section 3.7 of
-   [RFC8641], the subscription ID is added to the "push-update" and
-   "push-change-update" notification messages allowing to recognize to
-   which xpath or sub-tree the node was subscribed to.
+   NETCONF Event Notifications [RFC5277] and YANG-Push [RFC8641] allow
+   NETCONF [RFC6241] servers and YANG-Push publishers to send
+   notifications to a data collection.  In the metadata of the event
+   notification header, only the eventTime is present indicating at
+   which time the notification message was published.  For YANG-Push
+   notifications, the subscription ID is added to the "push-update" and
+   "push-change-update" notification messages allowing the YANG-Push
+   receiver to map and recognize which Xpath or subtree is bound to the
+   subscription.
 
    When the NETCONF event notification message is forwarded from the
    receiver to another system, such as a messaging system or a time
@@ -106,13 +109,17 @@ Table of Contents
 
 
 
-
-
-
 Graf, et al.            Expires 29 November 2024                [Page 2]
 
 Internet-Draft        YANG Notifications Sequencing             May 2024
 
+
+   To correlate network data among different Network Telemetry planes as
+   described in Section 3.1 of [RFC9232] or among different YANG push
+   subscription types as defined in Section 3.1 of [RFC8641], a
+   reference to the node streaming the data is needed.  This is
+   essential for understanding the timely relationship among these
+   different planes and YANG push subscription types.
 
    Today, network operators workaround this impediment by preserving the
    transport source IP address and sequence numbers of the publishing
@@ -121,31 +128,27 @@ Internet-Draft        YANG Notifications Sequencing             May 2024
    semantic readability of the message in the downstream system.
 
    On top of that, the transport source IP address might not represent
-   the management IP address by which the YANG Push server should be
+   the management IP address by which the YANG Push publisher should be
    known.  In other terms, the source-host [RFC6470], which is the
    "Address of the remote host for the session" might not be the
    management IP address.
 
-   By extending the NETCONF Event Notification header with a sysName,
-   the node's fully-qualified domain name, a reference to the YANG Push
-   publisher process and a sequence number as described in [RFC9187],
-   the downstream system is not only able to identify from which network
-   node, subscription, and time the message was published but also, the
-   order of the published messages.
+   To overcome these issues, this document proposes extending the YANG
+   notification header with a sysName, the node's fully-qualified domain
+   name, and a sequence number as described in [RFC9187].  This allows
+   the downstream system to not only be able to identify from which
+   network node, subscription, and time the message was published but
+   also, the order of the published messages.
 
-   To correlate network data among different Network Telemetry planes as
-   described in Section 3.1 of [RFC9232] or among different YANG push
-   subscription types defined in Section 3.1 of [RFC8641], sysName
-   describes from which network node the state change was observed or
-   from when to when the data was accounted.  This is essential for
-   understanding the timely relationship among these different planes
-   and YANG push subscription types.
+2.  Extend the YANG Notification Header
 
-2.  Extend the NETCONF Event Notification Header
+   NETCONF Event Notifications [RFC5277] and YANG-Push [RFC8641] uses
+   the same notification header that is described in Section 2.2.1 of
+   [RFC5277].  [I-D.ahuang-netconf-notif-yang] defines how these
+   notifications should be encoded in JSON and CBOR.
 
    Besides the eventTime described in Section 2.2.1 of [RFC5277] the
-   following metadata objects are part of a "push-update" and "push-
-   change-update" notification message.
+   following metadata objects are part of a notification message.
 
    sysName:  Describes the node's fully-qualified domain name according
       to the 'sysName' object definition in [RFC1213] from where the
@@ -156,10 +159,7 @@ Internet-Draft        YANG Notifications Sequencing             May 2024
    sequenceNumber:  Generates a unique sequence number as described in
       [RFC9187] for each published message.
 
-   Figure 1 provides an example of a "push-change-update" message with
-   the sysName and sequenceNumber.  This "push-change-update" message is
-   encoded in XML [W3C.REC-xml-20081126] over the Network Configuration
-   Protocol (NETCONF) as per [RFC8640].
+
 
 
 
@@ -170,39 +170,237 @@ Graf, et al.            Expires 29 November 2024                [Page 3]
 Internet-Draft        YANG Notifications Sequencing             May 2024
 
 
+2.1.  Extension for NETCONF Event Notifications
+
+   The Notification of NETCONF Event Notifications [RFC5277] uses a XML
+   structure that is defined in Section 2.2.1 of [RFC5277].  [RFC5277]
+   also defines the capability
+   "urn:ietf:params:netconf:capability:notification:1.0" allowing a
+   NETCONF client to know that the NETCONF server supports sending
+   notifications.
+
+2.1.1.  Notification header
+
+   An implementation supporting this document extends the notification
+   defined in Section 2.2.1 of [RFC5277] adding a sysName and a
+   sequenceNumber.  Two more child nodes within the "notification"
+   container are expected, representing the sysName and the
+   sequenceNumber.
+
+   An example showing this extension in XML is provided in Figure 1:
+
 <notification xmlns="urn:ietf:params:xml:ns:netconf:notification:1.0">
- <eventTime>2023-02-04T16:30:11.22Z</eventTime>
- <sysName xmlns="urn:ietf:params:xml:ns:yang:ietf-notification-sequencing">
-  example-router
- </sysName>
- <sequenceNumber xmlns="urn:ietf:params:xml:ns:yang:ietf-notification-sequencing">
-  187653
- </sequenceNumber>
- <push-update xmlns="urn:ietf:params:xml:ns:yang:ietf-yang-push">
-   <id>1011</id>
-   <datastore-contents>
-      <interfaces xmlns="urn:ietf:params:xml:ns:yang:ietf-interfaces">
-       <interface>
-         <name>eth0</name>
-         <oper-status>up</oper-status>
-       </interface>
-     </interfaces>
-   </datastore-contents>
- </push-update>
+  <eventTime>2007-07-08T00:10:00Z</eventTime>
+  <sysName xmlns="urn:ietf:params:xml:ns:yang:ietf-notification-sequencing">
+    example-router
+  </sysName>
+  <sequenceNumber xmlns="urn:ietf:params:xml:ns:yang:ietf-notification-sequencing">
+    187653
+  </sequenceNumber>
+  <event xmlns="http://example.com/event/1.0">
+      <eventClass>state</eventClass>
+      <reportingEntity>
+          <card>Ethernet0</card>
+      </reportingEntity>
+      <operState>enabled</operState>
+  </event>
 </notification>
 
-        Figure 1: XML Push Example for a subscription-modified
-                         notification message
+             Figure 1: NETCONF Event Notification message
+
+2.1.2.  Capability exchange
+
+   This document also adds a new capability to NETCONF so that the
+   NETCONF server can notify the support of the sysName and
+   sequenceNumber to the NETCONF client.
+
+   When the NETCONF server supports this document, the following
+   capability is used:
+
+     urn:ietf:params:xml:ns:netconf:notification:2.0
+
+
+
+Graf, et al.            Expires 29 November 2024                [Page 4]
+
+Internet-Draft        YANG Notifications Sequencing             May 2024
+
+
+   The capability identifier is requested to IANA in Section XXX.
+
+   In the capability exchange between the NETCONF client and server, the
+   server will announce this capability along with the supported
+   capabilities by the server as shown in the example in Figure 2.
+
+   <hello xmlns="urn:ietf:params:xml:ns:netconf:base:1.0">
+     <capabilities>
+       <capability>
+           urn:ietf:params:xml:ns:netconf:base:1.0
+         </capability>
+         <capability>
+           urn:ietf:params:netconf:capability:startup:1.0
+         </capability>
+         <capability>
+           urn:ietf:params:netconf:capability:notification:2.0
+         </capability>
+       </capabilities>
+     <session-id>4</session-id>
+   </hello>
+
+                Figure 2: Example of a capability exchange.
+
+2.2.  Extension for YANG-Push
+
+   YANG-Push [RFC8641] uses the same structure defined in [RFC5277].
+   [RFC5277] defines the structure using XML encoding.  For other YANG
+   encodings, [I-D.ahuang-netconf-notif-yang] describes how
+   notifications should be encoded in JSON and CBOR.
+
+2.2.1.  YANG-Push Notification header
+
+   An implementation supporting this document extends the notification
+   defined in Section 4 of [I-D.ahuang-netconf-notif-yang] adding a
+   sysName and a sequenceNumber.  Two more child nodes within the
+   "notification" root container are expected, representing the sysName
+   and the sequenceNumber.
+
+   Figure 3 provides an example of a "push-update" notification with the
+   sysName and sequenceNumber.  This examples is encoded in XML
+   [W3C.REC-xml-20081126].
+
+
+
+
+
+
+
+
+
+
+Graf, et al.            Expires 29 November 2024                [Page 5]
+
+Internet-Draft        YANG Notifications Sequencing             May 2024
+
+
+   <notification xmlns="urn:ietf:params:xml:ns:netconf:notification:1.0">
+     <eventTime>2023-02-04T16:30:11.22Z</eventTime>
+     <sysName xmlns="urn:ietf:params:xml:ns:yang:ietf-notification-sequencing">
+       example-router
+     </sysName>
+     <sequenceNumber xmlns="urn:ietf:params:xml:ns:yang:ietf-notification-sequencing">
+       187653
+     </sequenceNumber>
+     <push-update xmlns="urn:ietf:params:xml:ns:yang:ietf-yang-push">
+       <id>1011</id>
+       <datastore-contents>
+           <interfaces xmlns="urn:ietf:params:xml:ns:yang:ietf-interfaces">
+           <interface>
+             <name>eth0</name>
+             <oper-status>up</oper-status>
+           </interface>
+         </interfaces>
+       </datastore-contents>
+     </push-update>
+   </notification>
+
+          Figure 3: YANG-Push Notification example encoded in XML
+
+   When the notifcation is encoded using JSON [RFC7951], the sysName and
+   the sequenceNumber are encoded at root container.  An example is
+   shown in Figure 4.
+
+   {
+       "ietf-notification:notification": {
+           "eventTime": "2023-02-10T08:00:11.22Z",
+           "sysName":"example-router",
+           "sequenceNumber": 187653,
+           "ietf-yang-push:push-update": {
+               "id": 1011,
+               "datastore-contents": {
+                   "ietf-interfaces:interfaces": [
+                       {
+                           "interface": {
+                               "name": "eth0",
+                               "oper-status": "up"
+                           }
+                       }
+                   ]
+               }
+           }
+       }
+   }
+
+
+
+
+Graf, et al.            Expires 29 November 2024                [Page 6]
+
+Internet-Draft        YANG Notifications Sequencing             May 2024
+
+
+          Figure 4: YANG-Push Notification example encoded in JSON
+
+   When the notification is encoded in CBOR [RFC9254], the sysName and
+   the sequenceNumber are encoded at root container.  An example is
+   shown in Figure 5 using CBOR diagnostic notation in section 3.1 of
+   [RFC9254].
+
+   {
+       "ietf-notification:notification": {
+           "eventTime": "2023-02-10T08:00:11.22Z",
+           "sysName":"example-router",
+           "sequenceNumber": 187653,
+           "ietf-yang-push:push-update": {
+               "id": 1011,
+               "datastore-contents": {
+                   "ietf-interfaces:interfaces": [
+                       {
+                           "interface": {
+                               "name": "eth0",
+                               "oper-status": "up"
+                           }
+                       }
+                   ]
+               }
+           }
+       }
+   }
+
+   Figure 5: YANG-Push Notification example in CBOR diagnostic notation.
+
+2.2.2.  YANG-Push capabilities
+
+   YANG-related system capabilites can be discovered by subscribing to
+   the datastore defined in [RFC9196].  This document augments the
+   "ietf-notification-capabilities" defined in Section 5 of [RFC9196] so
+   that the YANG-Push receiver can learn the capabilities defined in
+   this documents throught the datastore.
+
+   The definition of this YANG augmentation is specified in Section 3.
 
 3.  YANG Module for Event Notifications
 
+
+
+
+
+
+
+
+
+
+Graf, et al.            Expires 29 November 2024                [Page 7]
+
+Internet-Draft        YANG Notifications Sequencing             May 2024
+
+
 3.1.  YANG Tree Diagram
 
-   This ietf-notification-sequencing YANG module augments the "ietf-
+   This "ietf-notification-sequencing" YANG module augments the "ietf-
    notification" YANG module specified in Section 5 of
    [I-D.ahuang-netconf-notif-yang] adding the sysName and the
-   sequenceNumber leaves and augments [RFC9196] to add a system level
-   capability.
+   sequenceNumber leaves and augments "ietf-notification-capabilities"
+   defined in [RFC9196] to add a system level capability.
 
 module: ietf-notification-sequencing
 
@@ -216,15 +414,7 @@ module: ietf-notification-sequencing
 3.2.  Full Tree View
 
    The following is the YANG tree diagram [RFC8340] for the "ietf-
-   notification-sequencing" augmentation within the "ietf-notification"
-   YANG module.
-
-
-
-Graf, et al.            Expires 29 November 2024                [Page 4]
-
-Internet-Draft        YANG Notifications Sequencing             May 2024
-
+   notification" structure:
 
    module: ietf-notification
 
@@ -233,7 +423,88 @@ Internet-Draft        YANG Notifications Sequencing             May 2024
        +-- inotifseq:sysName                  inet:host
        +-- inotifseq:sequenceNumber           yang:counter32
 
+   The following YANG tree diagram [RFC8340] is the full tree of the
+   "ietf-notification-capabilities" YANG model:
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Graf, et al.            Expires 29 November 2024                [Page 8]
+
+Internet-Draft        YANG Notifications Sequencing             May 2024
+
+
+   module: ietf-system-capabilities
+     +--ro system-capabilities
+        +--ro datastore-capabilities* [datastore]
+        |  +--ro datastore
+        |  |       -> /yanglib:yang-library/datastore/name
+        |  +--ro per-node-capabilities* []
+        |     +--ro (node-selection)?
+        |     |  +--:(node-selector)
+        |     |     +--ro node-selector?
+        |     |             nacm:node-instance-identifier
+        |     +--ro notc:subscription-capabilities
+        |        +--ro notc:max-nodes-per-update?               uint32
+        |        +--ro notc:periodic-notifications-supported?
+        |        |       notification-support
+        |        +--ro (notc:update-period)?
+        |        |  +--:(notc:minimum-update-period)
+        |        |  |  +--ro notc:minimum-update-period?        uint32
+        |        |  +--:(notc:supported-update-period)
+        |        |     +--ro notc:supported-update-period*      uint32
+        |        +--ro notc:on-change-supported?
+        |        |       notification-support {yp:on-change}?
+        |        +--ro notc:minimum-dampening-period?           uint32
+        |        |       {yp:on-change}?
+        |        +--ro notc:supported-excluded-change-type*     union
+        |                {yp:on-change}?
+        +--ro notc:subscription-capabilities
+           +--ro notc:max-nodes-per-update?               uint32
+           +--ro notc:periodic-notifications-supported?
+           |       notification-support
+           +--ro (notc:update-period)?
+           |  +--:(notc:minimum-update-period)
+           |  |  +--ro notc:minimum-update-period?        uint32
+           |  +--:(notc:supported-update-period)
+           |     +--ro notc:supported-update-period*      uint32
+           +--ro notc:on-change-supported?
+           |       notification-support {yp:on-change}?
+           +--ro notc:minimum-dampening-period?           uint32
+           |       {yp:on-change}?
+           +--ro notc:supported-excluded-change-type*     union
+           |       {yp:on-change}?
+           +--ro inotifseq:sysname-sequence-supported?
+                   notification-support {sysname-sequence}?
+
 3.3.  YANG Module
+
+   The "ietf-notification-sequencing" augments the "ietf-notification"
+   and "ietf-notification-capabilities" YANG modules.
+
+
+
+
+Graf, et al.            Expires 29 November 2024                [Page 9]
+
+Internet-Draft        YANG Notifications Sequencing             May 2024
+
 
    <CODE BEGINS> file "ietf-notification-sequencing@2023-05-29.yang"
    module ietf-notification-sequencing {
@@ -274,14 +545,6 @@ Internet-Draft        YANG Notifications Sequencing             May 2024
          "RFC 8791: YANG Data Structure Extensions";
      }
 
-
-
-
-Graf, et al.            Expires 29 November 2024                [Page 5]
-
-Internet-Draft        YANG Notifications Sequencing             May 2024
-
-
      organization "IETF NETCONF (Network Configuration) Working Group";
      contact
        "WG Web:   <http:/tools.ietf.org/wg/netconf/>
@@ -291,6 +554,14 @@ Internet-Draft        YANG Notifications Sequencing             May 2024
                   <mailto:thomas.graf@swisscom.com>
                   Jean Quilbeuf
                   <mailto:jean.quilbeuf@huawei.com>
+
+
+
+Graf, et al.            Expires 29 November 2024               [Page 10]
+
+Internet-Draft        YANG Notifications Sequencing             May 2024
+
+
                   Alex Huang Feng
                   <mailto:alex.huang-feng@insa-lyon.fr>";
 
@@ -330,14 +601,6 @@ Internet-Draft        YANG Notifications Sequencing             May 2024
              "The publisher is capable of sending
              notifications for 'config true' nodes for the
              relevant scope and subscription type.";
-
-
-
-Graf, et al.            Expires 29 November 2024                [Page 6]
-
-Internet-Draft        YANG Notifications Sequencing             May 2024
-
-
          }
          bit state-changes {
            description
@@ -347,8 +610,16 @@ Internet-Draft        YANG Notifications Sequencing             May 2024
          }
        }
        description
+
+
+
+Graf, et al.            Expires 29 November 2024               [Page 11]
+
+Internet-Draft        YANG Notifications Sequencing             May 2024
+
+
          "Redefition of the type 'notification-support' from
-         'ietf-notification-capabilitie' module to be reusable in
+         'ietf-notification-capabilities' module to be reusable in
          other YANG modules.
 
          Type for defining whether 'on-change' or
@@ -386,14 +657,6 @@ Internet-Draft        YANG Notifications Sequencing             May 2024
            "Unique sequence number as described in [RFC3339] for each
            published message.";
        }
-
-
-
-Graf, et al.            Expires 29 November 2024                [Page 7]
-
-Internet-Draft        YANG Notifications Sequencing             May 2024
-
-
      }
 
      augment "/sysc:system-capabilities/notc:subscription-capabilities" {
@@ -403,6 +666,14 @@ Internet-Draft        YANG Notifications Sequencing             May 2024
          if-feature "sysname-sequence";
          type notification-support;
          description
+
+
+
+Graf, et al.            Expires 29 November 2024               [Page 12]
+
+Internet-Draft        YANG Notifications Sequencing             May 2024
+
+
            "Specifies whether the publisher supports exporting a
            sysName and a sequenceNumber in notifications.";
          reference
@@ -439,17 +710,6 @@ Internet-Draft        YANG Notifications Sequencing             May 2024
      Registrant Contact: The IESG.
      XML: N/A; the requested URI is an XML namespace.
 
-
-
-
-
-
-
-Graf, et al.            Expires 29 November 2024                [Page 8]
-
-Internet-Draft        YANG Notifications Sequencing             May 2024
-
-
 6.2.  YANG Module Name
 
    This document registers the following YANG modules in the "YANG
@@ -459,6 +719,25 @@ Internet-Draft        YANG Notifications Sequencing             May 2024
      namespace: urn:ietf:params:xml:ns:yang:ietf-notification-sequencing
      prefix: inotifseq
      reference: RFC XXXX
+
+
+
+
+
+
+Graf, et al.            Expires 29 November 2024               [Page 13]
+
+Internet-Draft        YANG Notifications Sequencing             May 2024
+
+
+6.3.  NETCONF Capability URNs Registry
+
+   This document registers the following NETCONF capability in the
+   "Network Configuration Protocol (NETCONF) Capability URNs" registry:
+
+  Capability: :notification:2.0
+  Capability Identifier: urn:ietf:params:xml:ns:netconf:notification:2.0
+  Reference: RFC XXXX
 
 7.  Operational Considerations
 
@@ -501,7 +780,8 @@ Internet-Draft        YANG Notifications Sequencing             May 2024
 
 
 
-Graf, et al.            Expires 29 November 2024                [Page 9]
+
+Graf, et al.            Expires 29 November 2024               [Page 14]
 
 Internet-Draft        YANG Notifications Sequencing             May 2024
 
@@ -511,9 +791,22 @@ Internet-Draft        YANG Notifications Sequencing             May 2024
               DOI 10.17487/RFC6020, October 2010,
               <https://www.rfc-editor.org/info/rfc6020>.
 
+   [RFC6241]  Enns, R., Ed., Bjorklund, M., Ed., Schoenwaelder, J., Ed.,
+              and A. Bierman, Ed., "Network Configuration Protocol
+              (NETCONF)", RFC 6241, DOI 10.17487/RFC6241, June 2011,
+              <https://www.rfc-editor.org/info/rfc6241>.
+
+   [RFC7951]  Lhotka, L., "JSON Encoding of Data Modeled with YANG",
+              RFC 7951, DOI 10.17487/RFC7951, August 2016,
+              <https://www.rfc-editor.org/info/rfc7951>.
+
    [RFC8340]  Bjorklund, M. and L. Berger, Ed., "YANG Tree Diagrams",
               BCP 215, RFC 8340, DOI 10.17487/RFC8340, March 2018,
               <https://www.rfc-editor.org/info/rfc8340>.
+
+   [RFC8641]  Clemm, A. and E. Voit, "Subscription to YANG Notifications
+              for Datastore Updates", RFC 8641, DOI 10.17487/RFC8641,
+              September 2019, <https://www.rfc-editor.org/info/rfc8641>.
 
    [RFC9187]  Touch, J., "Sequence Number Extension for Windowed
               Protocols", RFC 9187, DOI 10.17487/RFC9187, January 2022,
@@ -524,6 +817,12 @@ Internet-Draft        YANG Notifications Sequencing             May 2024
               Notifications", RFC 9196, DOI 10.17487/RFC9196, February
               2022, <https://www.rfc-editor.org/info/rfc9196>.
 
+   [RFC9254]  Veillette, M., Ed., Petrov, I., Ed., Pelov, A., Bormann,
+              C., and M. Richardson, "Encoding of Data Modeled with YANG
+              in the Concise Binary Object Representation (CBOR)",
+              RFC 9254, DOI 10.17487/RFC9254, July 2022,
+              <https://www.rfc-editor.org/info/rfc9254>.
+
    [W3C.REC-xml-20081126]
               Bray, T., Paoli, J., Sperberg-McQueen, M., Maler, E., and
               F. Yergeau, "Extensible Markup Language (XML) 1.0 (Fifth
@@ -532,6 +831,16 @@ Internet-Draft        YANG Notifications Sequencing             May 2024
               <https://www.w3.org/TR/2008/REC-xml-20081126>.
 
 9.2.  Informative References
+
+
+
+
+
+
+Graf, et al.            Expires 29 November 2024               [Page 15]
+
+Internet-Draft        YANG Notifications Sequencing             May 2024
+
 
    [I-D.ietf-netconf-udp-notif]
               Zheng, G., Zhou, T., Graf, T., Francois, P., Feng, A. H.,
@@ -549,28 +858,6 @@ Internet-Draft        YANG Notifications Sequencing             May 2024
               Monitoring Protocol (BMP)", RFC 7854,
               DOI 10.17487/RFC7854, June 2016,
               <https://www.rfc-editor.org/info/rfc7854>.
-
-
-
-
-
-
-
-
-Graf, et al.            Expires 29 November 2024               [Page 10]
-
-Internet-Draft        YANG Notifications Sequencing             May 2024
-
-
-   [RFC8640]  Voit, E., Clemm, A., Gonzalez Prieto, A., Nilsen-Nygaard,
-              E., and A. Tripathy, "Dynamic Subscription to YANG Events
-              and Datastores over NETCONF", RFC 8640,
-              DOI 10.17487/RFC8640, September 2019,
-              <https://www.rfc-editor.org/info/rfc8640>.
-
-   [RFC8641]  Clemm, A. and E. Voit, "Subscription to YANG Notifications
-              for Datastore Updates", RFC 8641, DOI 10.17487/RFC8641,
-              September 2019, <https://www.rfc-editor.org/info/rfc8641>.
 
    [RFC9232]  Song, H., Qin, F., Martinez-Julia, P., Ciavaglia, L., and
               A. Wang, "Network Telemetry Framework", RFC 9232,
@@ -606,11 +893,4 @@ Authors' Addresses
 
 
 
-
-
-
-
-
-
-
-Graf, et al.            Expires 29 November 2024               [Page 11]
+Graf, et al.            Expires 29 November 2024               [Page 16]

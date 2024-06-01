@@ -2,7 +2,8 @@
 
 ### Augmenting ietf-notification
 ```shell
-$ pyang augmenting/ietf-notification-sequencing.yang --tree-print-structures -f tree -p dependencies
+$ pyang augmenting/ietf-notification-sequencing.yang --tree-print-structures -f tree -p dependencies --tree-line-length 69
+$ pyang augmenting/ietf-notification-sequencing.yang dependencies/ietf-system-capabilities@2022-02-17.yang dependencies/ietf-notification-capabilities@2022-02-17.yang -f tree -p dependencies --tree-line-length 69
 ```
 
 ### Using a new revision

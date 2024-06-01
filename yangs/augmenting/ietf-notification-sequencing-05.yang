@@ -94,7 +94,7 @@ module ietf-notification-sequencing {
     }
     description
       "Redefition of the type 'notification-support' from 
-      'ietf-notification-capabilitie' module to be reusable in
+      'ietf-notification-capabilities' module to be reusable in
       other YANG modules.
 
       Type for defining whether 'on-change' or
