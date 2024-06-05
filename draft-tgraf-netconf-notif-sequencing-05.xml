@@ -71,7 +71,7 @@
     <date day="28" month="May" year="2024"/>
 
     <abstract>
-      <t>This document specifies a new YANG module that augment the NETCONF
+      <t>This document specifies a new YANG module that augments the NETCONF
       Event Notification header to support the hostname and sequence number to
       identify from which network node and at which time the message was
       published. This allows the collector to recognize loss, delay and
@@ -102,15 +102,15 @@
       message loss or reordering.</t>
 
       <t>To correlate network data among different Network Telemetry planes as
-      described in Section 3.1 of <xref target="RFC9232"/> or among different
-      YANG-Push subscription types as defined in Section 3.1 of <xref
+      described in <xref target="RFC9232" section="3.1"/> or among different
+      YANG-Push subscription types as defined in <xref section="3.1"
       target="RFC8641"/>, a reference to the node streaming the data is needed.
       This is essential for understanding the timely relationship among these
       different planes and YANG-Push subscription types.</t>
 
-      <t>Today, network operators workaround this impediment by preserving the
+      <t>Today, network operators work around this impediment by preserving the
       transport source IP address and sequence numbers of the publishing
-      process. However, this implies that this information needs to be encoded
+      process. However, this implies encoding this information
       in the NETCONF event notification message which impacts the semantic
       readability of the message in the downstream system.</t>
 
@@ -136,11 +136,11 @@
              title="Extend the YANG Notification Header">
 
       <t>NETCONF Event Notifications <xref target="RFC5277"/> and YANG-Push <xref target="RFC8641"/>
-      uses the same notification header that is described in Section 2.2.1 of <xref
+      uses the same notification header that is described in <xref section="2.2.1" 
       target="RFC5277"/>. <xref target="I-D.ahuang-netconf-notif-yang"/> 
       defines how these notifications should be encoded in JSON and CBOR.</t>
 
-      <t>Besides the eventTime described in Section 2.2.1 of <xref
+      <t>Besides the eventTime described in <xref section="2.2.1" 
       target="RFC5277"/> the following metadata objects are part of a
       notification message.</t>
 
@@ -163,7 +163,7 @@
 
       <section title="Extension for NETCONF Event Notifications">
         <t>The Notification of NETCONF Event Notifications <xref target="RFC5277"/>
-        uses a XML structure that is defined in Section 2.2.1 of <xref target="RFC5277"/>.
+        uses a XML structure that is defined in <xref target="RFC5277" section="2.2.1"/>.
         <xref target="RFC5277"/> also defines the capability
         "urn:ietf:params:netconf:capability:notification:1.0" allowing a NETCONF
         client to know that the NETCONF server supports sending notifications.
@@ -171,7 +171,7 @@
 
         <section title="Notification header">
           <t>An implementation supporting this document extends the notification defined
-          in Section 2.2.1 of <xref target="RFC5277"/> adding a sysName and a sequenceNumber.
+          in <xref target="RFC5277" section="2.2.1"/> adding a sysName and a sequenceNumber.
           Two more child nodes within the &quot;notification&quot; container are expected,
           representing the sysName and the sequenceNumber.
           </t>
@@ -211,7 +211,7 @@
   urn:ietf:params:xml:ns:netconf:notification:2.0
         ]]></artwork>
 
-          <t>The capability identifier is requested to IANA in Section XXX.</t>
+          <t>The capability identifier is requested to IANA in <xref target="iana"/>.</t>
           
           <t>In the capability exchange between the NETCONF client and server, the server will
           announce this capability along with the supported capabilities by the server as shown
@@ -248,7 +248,7 @@
 
         <section title="YANG-Push Notification header">
           <t>An implementation supporting this document extends the notification defined
-          in Section 4 of <xref target="I-D.ahuang-netconf-notif-yang"/> adding a
+          in <xref target="I-D.ahuang-netconf-notif-yang" section="4"/> adding a
           sysName and a sequenceNumber. Two more child nodes within the
           &quot;notification&quot; root container are expected, representing the
           sysName and the sequenceNumber.</t>
@@ -315,8 +315,8 @@
 
           <t>When the notification is encoded in CBOR <xref target="RFC9254"/>, the 
           sysName and the sequenceNumber are encoded at root container. An example is shown
-          in <xref target="yang_push_cbor"/> using CBOR diagnostic notation in section
-          3.1 of <xref target="RFC9254"/>.</t>
+          in <xref target="yang_push_cbor"/> using CBOR diagnostic notation from
+          <xref target="RFC9254" section="3.1"/>.</t>
 
           <figure anchor="yang_push_cbor"
                 title="YANG-Push Notification example in CBOR diagnostic notation.">
@@ -348,7 +348,7 @@
         <section title="YANG-Push capabilities">
           <t>YANG-related system capabilites can be discovered by subscribing to 
           the datastore defined in <xref target="RFC9196"/>. This document augments the
-          "ietf-notification-capabilities" defined in Section 5 of <xref target="RFC9196"/>
+          "ietf-notification-capabilities" defined in <xref target="RFC9196" section="5"/>
           so that the YANG-Push receiver can learn the capabilities defined in this
           documents throught the datastore.</t>
 
@@ -625,7 +625,7 @@ module ietf-notification-sequencing {
       security considerations.</t>
     </section>
 
-    <section anchor="IANA_Considerations" title="IANA Considerations">
+    <section anchor="iana" title="IANA Considerations">
       <section title="IETF XML Registry">
         <t>This document registers the following URIs in the "IETF XML
         Registry" <xref target="RFC3688"/>:</t>
@@ -669,7 +669,7 @@ module ietf-notification-sequencing {
                title="SysName Correlation">
         <t>In order to allow data correlation among BGP Monitoring Protocol
         (BMP) <xref target="RFC7854"/> and YANG-Push, the same hostname value
-        should be used as described in section 4.4 of <xref target="RFC7854"/>
+        should be used as described in <xref target="RFC7854" section="4.4"/>
         for the information TLV in the init BMP message type.</t>
       </section>
     </section>

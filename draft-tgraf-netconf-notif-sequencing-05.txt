@@ -16,7 +16,7 @@ Expires: 29 November 2024                                         Huawei
 
 Abstract
 
-   This document specifies a new YANG module that augment the NETCONF
+   This document specifies a new YANG module that augments the NETCONF
    Event Notification header to support the hostname and sequence number
    to identify from which network node and at which time the message was
    published.  This allows the collector to recognize loss, delay and
@@ -121,11 +121,11 @@ Internet-Draft        YANG Notifications Sequencing             May 2024
    essential for understanding the timely relationship among these
    different planes and YANG-Push subscription types.
 
-   Today, network operators workaround this impediment by preserving the
-   transport source IP address and sequence numbers of the publishing
-   process.  However, this implies that this information needs to be
-   encoded in the NETCONF event notification message which impacts the
-   semantic readability of the message in the downstream system.
+   Today, network operators work around this impediment by preserving
+   the transport source IP address and sequence numbers of the
+   publishing process.  However, this implies encoding this information
+   in the NETCONF event notification message which impacts the semantic
+   readability of the message in the downstream system.
 
    On top of that, the transport source IP address might not represent
    the management IP address by which the YANG-Push publisher should be
@@ -226,7 +226,7 @@ Graf, et al.            Expires 29 November 2024                [Page 4]
 Internet-Draft        YANG Notifications Sequencing             May 2024
 
 
-   The capability identifier is requested to IANA in Section XXX.
+   The capability identifier is requested to IANA in Section 6.
 
    In the capability exchange between the NETCONF client and server, the
    server will announce this capability along with the supported
@@ -342,7 +342,7 @@ Internet-Draft        YANG Notifications Sequencing             May 2024
 
    When the notification is encoded in CBOR [RFC9254], the sysName and
    the sequenceNumber are encoded at root container.  An example is
-   shown in Figure 5 using CBOR diagnostic notation in section 3.1 of
+   shown in Figure 5 using CBOR diagnostic notation from Section 3.1 of
    [RFC9254].
 
    {
@@ -745,7 +745,7 @@ Internet-Draft        YANG Notifications Sequencing             May 2024
 
    In order to allow data correlation among BGP Monitoring Protocol
    (BMP) [RFC7854] and YANG-Push, the same hostname value should be used
-   as described in section 4.4 of [RFC7854] for the information TLV in
+   as described in Section 4.4 of [RFC7854] for the information TLV in
    the init BMP message type.
 
 8.  Acknowledgements
