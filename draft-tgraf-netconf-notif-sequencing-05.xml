@@ -68,7 +68,7 @@
       </address>
     </author>
 
-    <date day="28" month="May" year="2024"/>
+    <date day="08" month="June" year="2024"/>
 
     <abstract>
       <t>This document specifies a new YANG module that augments the NETCONF
@@ -128,10 +128,6 @@
 
     </section>
 
-    <!-- <section title=""></section>
-    <section title=""></section>
-    <section title=""></section>
-    <section title=""></section> -->
     <section anchor="Streaming-Update"
              title="Extend the YANG Notification Header">
 
@@ -206,9 +202,9 @@
           the NETCONF server can notify the support of the sysName and sequenceNumber
           to the NETCONF client.</t>
 
-          <t>When the NETCONF server supports this document, the following capability is used:</t>
+          <t>When the NETCONF server supports this document, the following capability is advertised:</t>
           <artwork align="left"><![CDATA[
-  urn:ietf:params:xml:ns:netconf:notification:2.0
+  urn:ietf:params:netconf:capability:notification-sysname-sequence:1.0
         ]]></artwork>
 
           <t>The capability identifier is requested to IANA in <xref target="iana"/>.</t>
@@ -229,7 +225,10 @@
         urn:ietf:params:netconf:capability:startup:1.0
       </capability>
       <capability>
-        urn:ietf:params:netconf:capability:notification:2.0
+        urn:ietf:params:netconf:capability:notification:1.0
+      </capability>
+      <capability>
+        urn:ietf:params:netconf:capability:notification-sysname-sequence:1.0
       </capability>
     </capabilities>
   <session-id>4</session-id>
@@ -293,8 +292,8 @@
 {
     "ietf-notification:notification": {
         "eventTime": "2023-02-10T08:00:11.22Z",
-        "sysName":"example-router",
-        "sequenceNumber": 187653,
+        "ietf-notification-sequencing:sysName":"example-router",
+        "ietf-notification-sequencing:sequenceNumber": 187653,
         "ietf-yang-push:push-update": {
             "id": 1011,
             "datastore-contents": {
@@ -324,8 +323,8 @@
 {
     "ietf-notification:notification": {
         "eventTime": "2023-02-10T08:00:11.22Z",
-        "sysName":"example-router",
-        "sequenceNumber": 187653,
+        "ietf-notification-sequencing:sysName":"example-router",
+        "ietf-notification-sequencing:sequenceNumber": 187653,
         "ietf-yang-push:push-update": {
             "id": 1011,
             "datastore-contents": {
@@ -657,8 +656,8 @@ module ietf-notification-sequencing {
 
         <figure>
             <artwork align="left"><![CDATA[
-  Capability: :notification:2.0
-  Capability Identifier: urn:ietf:params:xml:ns:netconf:notification:2.0
+  Capability: :notification-sysname-sequence:1.0
+  Capability Identifier: urn:ietf:params:netconf:capability:notification-sysname-sequence:1.0
   Reference: RFC XXXX]]></artwork>
         </figure>
       </section>

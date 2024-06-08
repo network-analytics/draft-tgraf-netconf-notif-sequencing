@@ -5,10 +5,10 @@
 Network Working Group                                            T. Graf
 Internet-Draft                                                  Swisscom
 Intended status: Standards Track                             J. Quilbeuf
-Expires: 29 November 2024                                         Huawei
+Expires: 10 December 2024                                         Huawei
                                                            A. Huang Feng
                                                                INSA-Lyon
-                                                             28 May 2024
+                                                             8 June 2024
 
 
         Support of Hostname and Sequencing in YANG Notifications
@@ -38,7 +38,7 @@ Status of This Memo
    time.  It is inappropriate to use Internet-Drafts as reference
    material or to cite them other than as "work in progress."
 
-   This Internet-Draft will expire on 29 November 2024.
+   This Internet-Draft will expire on 10 December 2024.
 
 Copyright Notice
 
@@ -53,9 +53,9 @@ Copyright Notice
 
 
 
-Graf, et al.            Expires 29 November 2024                [Page 1]
+Graf, et al.            Expires 10 December 2024                [Page 1]
 
-Internet-Draft        YANG Notifications Sequencing             May 2024
+Internet-Draft        YANG Notifications Sequencing            June 2024
 
 
    extracted from this document must include Revised BSD License text as
@@ -109,9 +109,9 @@ Table of Contents
 
 
 
-Graf, et al.            Expires 29 November 2024                [Page 2]
+Graf, et al.            Expires 10 December 2024                [Page 2]
 
-Internet-Draft        YANG Notifications Sequencing             May 2024
+Internet-Draft        YANG Notifications Sequencing            June 2024
 
 
    To correlate network data among different Network Telemetry planes as
@@ -165,9 +165,9 @@ Internet-Draft        YANG Notifications Sequencing             May 2024
 
 
 
-Graf, et al.            Expires 29 November 2024                [Page 3]
+Graf, et al.            Expires 10 December 2024                [Page 3]
 
-Internet-Draft        YANG Notifications Sequencing             May 2024
+Internet-Draft        YANG Notifications Sequencing            June 2024
 
 
 2.1.  Extension for NETCONF Event Notifications
@@ -215,15 +215,15 @@ Internet-Draft        YANG Notifications Sequencing             May 2024
    sequenceNumber to the NETCONF client.
 
    When the NETCONF server supports this document, the following
-   capability is used:
+   capability is advertised:
 
-     urn:ietf:params:xml:ns:netconf:notification:2.0
+    urn:ietf:params:netconf:capability:notification-sysname-sequence:1.0
 
 
 
-Graf, et al.            Expires 29 November 2024                [Page 4]
+Graf, et al.            Expires 10 December 2024                [Page 4]
 
-Internet-Draft        YANG Notifications Sequencing             May 2024
+Internet-Draft        YANG Notifications Sequencing            June 2024
 
 
    The capability identifier is requested to IANA in Section 6.
@@ -232,22 +232,25 @@ Internet-Draft        YANG Notifications Sequencing             May 2024
    server will announce this capability along with the supported
    capabilities by the server as shown in the example in Figure 2.
 
-   <hello xmlns="urn:ietf:params:xml:ns:netconf:base:1.0">
-     <capabilities>
-       <capability>
-           urn:ietf:params:xml:ns:netconf:base:1.0
-         </capability>
-         <capability>
-           urn:ietf:params:netconf:capability:startup:1.0
-         </capability>
-         <capability>
-           urn:ietf:params:netconf:capability:notification:2.0
-         </capability>
-       </capabilities>
-     <session-id>4</session-id>
-   </hello>
+<hello xmlns="urn:ietf:params:xml:ns:netconf:base:1.0">
+  <capabilities>
+    <capability>
+        urn:ietf:params:xml:ns:netconf:base:1.0
+      </capability>
+      <capability>
+        urn:ietf:params:netconf:capability:startup:1.0
+      </capability>
+      <capability>
+        urn:ietf:params:netconf:capability:notification:1.0
+      </capability>
+      <capability>
+        urn:ietf:params:netconf:capability:notification-sysname-sequence:1.0
+      </capability>
+    </capabilities>
+  <session-id>4</session-id>
+</hello>
 
-                Figure 2: Example of a capability exchange.
+             Figure 2: Example of a capability exchange.
 
 2.2.  Extension for YANG-Push
 
@@ -274,12 +277,9 @@ Internet-Draft        YANG Notifications Sequencing             May 2024
 
 
 
-
-
-
-Graf, et al.            Expires 29 November 2024                [Page 5]
+Graf, et al.            Expires 10 December 2024                [Page 5]
 
-Internet-Draft        YANG Notifications Sequencing             May 2024
+Internet-Draft        YANG Notifications Sequencing            June 2024
 
 
    <notification xmlns="urn:ietf:params:xml:ns:netconf:notification:1.0">
@@ -312,8 +312,8 @@ Internet-Draft        YANG Notifications Sequencing             May 2024
    {
        "ietf-notification:notification": {
            "eventTime": "2023-02-10T08:00:11.22Z",
-           "sysName":"example-router",
-           "sequenceNumber": 187653,
+           "ietf-notification-sequencing:sysName":"example-router",
+           "ietf-notification-sequencing:sequenceNumber": 187653,
            "ietf-yang-push:push-update": {
                "id": 1011,
                "datastore-contents": {
@@ -333,9 +333,9 @@ Internet-Draft        YANG Notifications Sequencing             May 2024
 
 
 
-Graf, et al.            Expires 29 November 2024                [Page 6]
+Graf, et al.            Expires 10 December 2024                [Page 6]
 
-Internet-Draft        YANG Notifications Sequencing             May 2024
+Internet-Draft        YANG Notifications Sequencing            June 2024
 
 
           Figure 4: YANG-Push Notification example encoded in JSON
@@ -348,8 +348,8 @@ Internet-Draft        YANG Notifications Sequencing             May 2024
    {
        "ietf-notification:notification": {
            "eventTime": "2023-02-10T08:00:11.22Z",
-           "sysName":"example-router",
-           "sequenceNumber": 187653,
+           "ietf-notification-sequencing:sysName":"example-router",
+           "ietf-notification-sequencing:sequenceNumber": 187653,
            "ietf-yang-push:push-update": {
                "id": 1011,
                "datastore-contents": {
@@ -389,9 +389,9 @@ Internet-Draft        YANG Notifications Sequencing             May 2024
 
 
 
-Graf, et al.            Expires 29 November 2024                [Page 7]
+Graf, et al.            Expires 10 December 2024                [Page 7]
 
-Internet-Draft        YANG Notifications Sequencing             May 2024
+Internet-Draft        YANG Notifications Sequencing            June 2024
 
 
 3.1.  YANG Tree Diagram
@@ -445,9 +445,9 @@ module: ietf-notification-sequencing
 
 
 
-Graf, et al.            Expires 29 November 2024                [Page 8]
+Graf, et al.            Expires 10 December 2024                [Page 8]
 
-Internet-Draft        YANG Notifications Sequencing             May 2024
+Internet-Draft        YANG Notifications Sequencing            June 2024
 
 
    module: ietf-system-capabilities
@@ -501,9 +501,9 @@ Internet-Draft        YANG Notifications Sequencing             May 2024
 
 
 
-Graf, et al.            Expires 29 November 2024                [Page 9]
+Graf, et al.            Expires 10 December 2024                [Page 9]
 
-Internet-Draft        YANG Notifications Sequencing             May 2024
+Internet-Draft        YANG Notifications Sequencing            June 2024
 
 
    <CODE BEGINS> file "ietf-notification-sequencing@2023-05-29.yang"
@@ -557,9 +557,9 @@ Internet-Draft        YANG Notifications Sequencing             May 2024
 
 
 
-Graf, et al.            Expires 29 November 2024               [Page 10]
+Graf, et al.            Expires 10 December 2024               [Page 10]
 
-Internet-Draft        YANG Notifications Sequencing             May 2024
+Internet-Draft        YANG Notifications Sequencing            June 2024
 
 
                   Alex Huang Feng
@@ -613,9 +613,9 @@ Internet-Draft        YANG Notifications Sequencing             May 2024
 
 
 
-Graf, et al.            Expires 29 November 2024               [Page 11]
+Graf, et al.            Expires 10 December 2024               [Page 11]
 
-Internet-Draft        YANG Notifications Sequencing             May 2024
+Internet-Draft        YANG Notifications Sequencing            June 2024
 
 
          "Redefition of the type 'notification-support' from
@@ -669,9 +669,9 @@ Internet-Draft        YANG Notifications Sequencing             May 2024
 
 
 
-Graf, et al.            Expires 29 November 2024               [Page 12]
+Graf, et al.            Expires 10 December 2024               [Page 12]
 
-Internet-Draft        YANG Notifications Sequencing             May 2024
+Internet-Draft        YANG Notifications Sequencing            June 2024
 
 
            "Specifies whether the publisher supports exporting a
@@ -725,9 +725,9 @@ Internet-Draft        YANG Notifications Sequencing             May 2024
 
 
 
-Graf, et al.            Expires 29 November 2024               [Page 13]
+Graf, et al.            Expires 10 December 2024               [Page 13]
 
-Internet-Draft        YANG Notifications Sequencing             May 2024
+Internet-Draft        YANG Notifications Sequencing            June 2024
 
 
 6.3.  NETCONF Capability URNs Registry
@@ -735,8 +735,8 @@ Internet-Draft        YANG Notifications Sequencing             May 2024
    This document registers the following NETCONF capability in the
    "Network Configuration Protocol (NETCONF) Capability URNs" registry:
 
-  Capability: :notification:2.0
-  Capability Identifier: urn:ietf:params:xml:ns:netconf:notification:2.0
+  Capability: :notification-sysname-sequence:1.0
+  Capability Identifier: urn:ietf:params:netconf:capability:notification-sysname-sequence:1.0
   Reference: RFC XXXX
 
 7.  Operational Considerations
@@ -781,9 +781,9 @@ Internet-Draft        YANG Notifications Sequencing             May 2024
 
 
 
-Graf, et al.            Expires 29 November 2024               [Page 14]
+Graf, et al.            Expires 10 December 2024               [Page 14]
 
-Internet-Draft        YANG Notifications Sequencing             May 2024
+Internet-Draft        YANG Notifications Sequencing            June 2024
 
 
    [RFC6020]  Bjorklund, M., Ed., "YANG - A Data Modeling Language for
@@ -837,9 +837,9 @@ Internet-Draft        YANG Notifications Sequencing             May 2024
 
 
 
-Graf, et al.            Expires 29 November 2024               [Page 15]
+Graf, et al.            Expires 10 December 2024               [Page 15]
 
-Internet-Draft        YANG Notifications Sequencing             May 2024
+Internet-Draft        YANG Notifications Sequencing            June 2024
 
 
    [I-D.ietf-netconf-udp-notif]
@@ -893,4 +893,4 @@ Authors' Addresses
 
 
 
-Graf, et al.            Expires 29 November 2024               [Page 16]
+Graf, et al.            Expires 10 December 2024               [Page 16]
