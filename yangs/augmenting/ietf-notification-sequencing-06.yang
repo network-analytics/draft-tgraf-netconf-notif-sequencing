@@ -131,7 +131,7 @@ module ietf-notification-sequencing {
       description
         "Generates a unique sequence number for each published message
         by the publisher process. The number counts up at every
-        published notification message as described [RFC9187].";
+        published notification message as described in [RFC9187].";
     }
   }
 
