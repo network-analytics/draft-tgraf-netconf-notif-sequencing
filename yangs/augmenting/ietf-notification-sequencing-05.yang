@@ -64,7 +64,7 @@ module ietf-notification-sequencing {
     This version of this YANG module is part of RFC XXXX; see the RFC
     itself for full legal notices.";
 
-  revision 2023-05-29 {
+  revision 2023-06-30 {
     description
       "First revision";
     reference
@@ -129,8 +129,9 @@ module ietf-notification-sequencing {
       type yang:counter32;
       mandatory true;
       description
-        "Unique sequence number as described in [RFC3339] for each
-        published message.";
+        "Generates a unique sequence number for each published message
+        by the publisher process. The number counts up at every
+        published notification message as described [RFC9187].";
     }
   }
 
